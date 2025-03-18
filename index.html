@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algorithm Practice - Login</title>
+    <title>ReCode - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -11,16 +11,22 @@
                 extend: {
                     colors: {
                         primary: {
-                            DEFAULT: '#3B82F6',
-                            dark: '#2563EB'
+                            DEFAULT: '#1c4e80',
+                            dark: '#163e66'
+                        },
+                        secondary: '#7c909a',
+                        accent: {
+                            DEFAULT: '#ea6947',
+                            dark: '#d55a3a'
                         },
                         dark: {
-                            DEFAULT: '#0F172A',
-                            lighter: '#1E293B'
-                        }
+                            DEFAULT: '#23282e',
+                            lighter: '#2d343c'
+                        },
+                        light: '#d0dae5'
                     },
                     boxShadow: {
-                        'neon': '0 0 5px theme("colors.primary.DEFAULT"), 0 0 20px theme("colors.primary.DEFAULT")',
+                        'neon': '0 0 5px theme("colors.accent.DEFAULT"), 0 0 20px theme("colors.accent.DEFAULT")',
                     }
                 }
             }
@@ -30,12 +36,15 @@
         @layer utilities {
             .bg-grid {
                 background-image: 
-                    linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+                    linear-gradient(rgba(28, 78, 128, 0.1) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(28, 78, 128, 0.1) 1px, transparent 1px);
                 background-size: 20px 20px;
             }
             .text-shadow {
-                text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+                text-shadow: 0 0 10px rgba(28, 78, 128, 0.5);
+            }
+            .active-tab {
+                border-bottom: 2px solid #ea6947;
             }
         }
     </style>
@@ -44,46 +53,46 @@
     <div class="w-full max-w-md">
         <!-- Logo and Title -->
         <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-white text-shadow mb-2">Re<span class="text-primary">Code</span></h1>
-            <p class="text-gray-400">Master coding algorithms with spaced repetition</p>
+            <h1 class="text-4xl font-bold text-light text-shadow mb-2">Re<span class="text-accent">Code</span></h1>
+            <p class="text-secondary">Master coding algorithms with spaced repetition</p>
         </div>
         
         <!-- Card Container -->
-        <div class="bg-dark-lighter/80 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-gray-700">
+        <div class="bg-dark-lighter/80 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-secondary/20">
             <!-- Tabs -->
-            <div class="flex border-b border-gray-700" id="tabs">
-                <button class="flex-1 py-4 text-white font-medium text-center active-tab" id="login-tab">Login</button>
-                <button class="flex-1 py-4 text-gray-400 font-medium text-center" id="register-tab">Register</button>
+            <div class="flex border-b border-secondary/20" id="tabs">
+                <button class="flex-1 py-4 text-light font-medium text-center active-tab" id="login-tab">Login</button>
+                <button class="flex-1 py-4 text-secondary font-medium text-center" id="register-tab">Register</button>
             </div>
             
             <!-- Login Form -->
             <div id="login-form" class="p-6">
                 <form id="loginForm">
                     <div class="mb-4">
-                        <label for="login-email" class="block text-gray-400 mb-2">Email</label>
+                        <label for="login-email" class="block text-secondary mb-2">Email</label>
                         <input 
                             type="email" 
                             id="login-email" 
-                            class="w-full bg-dark/50 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                            class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary"
                             placeholder="Enter your email"
                             required
                         >
-                        <p class="text-red-500 text-sm mt-1 hidden" id="login-email-error"></p>
+                        <p class="text-accent text-sm mt-1 hidden" id="login-email-error"></p>
                     </div>
                     
                     <div class="mb-6">
-                        <label for="login-password" class="block text-gray-400 mb-2">Password</label>
+                        <label for="login-password" class="block text-secondary mb-2">Password</label>
                         <div class="relative">
                             <input 
                                 type="password" 
                                 id="login-password" 
-                                class="w-full bg-dark/50 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                                class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary"
                                 placeholder="Enter your password"
                                 required
                             >
                             <button 
                                 type="button"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-secondary hover:text-light"
                                 id="login-toggle-password"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -92,12 +101,12 @@
                                 </svg>
                             </button>
                         </div>
-                        <p class="text-red-500 text-sm mt-1 hidden" id="login-password-error"></p>
+                        <p class="text-accent text-sm mt-1 hidden" id="login-password-error"></p>
                     </div>
                     
                     <button 
                         type="submit" 
-                        class="w-full bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 hover:shadow-neon"
+                        class="w-full bg-accent hover:bg-accent-dark text-light font-medium py-2 px-4 rounded-lg transition-all duration-300 hover:shadow-neon"
                     >
                         Sign In
                     </button>
@@ -106,44 +115,44 @@
             
             <!-- Register Form -->
             <div id="register-form" class="p-6 hidden">
-                <form id="registerForm">
+                <form id="registerFormElement">
                     <div class="mb-4">
-                        <label for="register-username" class="block text-gray-400 mb-2">Username</label>
+                        <label for="register-username" class="block text-secondary mb-2">Username</label>
                         <input 
                             type="text" 
                             id="register-username" 
-                            class="w-full bg-dark/50 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                            class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary"
                             placeholder="Choose a username"
                             required
                         >
-                        <p class="text-red-500 text-sm mt-1 hidden" id="register-username-error"></p>
+                        <p class="text-accent text-sm mt-1 hidden" id="register-username-error"></p>
                     </div>
                     
                     <div class="mb-4">
-                        <label for="register-email" class="block text-gray-400 mb-2">Email</label>
+                        <label for="register-email" class="block text-secondary mb-2">Email</label>
                         <input 
                             type="email" 
                             id="register-email" 
-                            class="w-full bg-dark/50 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                            class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary"
                             placeholder="Enter your email"
                             required
                         >
-                        <p class="text-red-500 text-sm mt-1 hidden" id="register-email-error"></p>
+                        <p class="text-accent text-sm mt-1 hidden" id="register-email-error"></p>
                     </div>
                     
                     <div class="mb-4">
-                        <label for="register-password" class="block text-gray-400 mb-2">Password</label>
+                        <label for="register-password" class="block text-secondary mb-2">Password</label>
                         <div class="relative">
                             <input 
                                 type="password" 
                                 id="register-password" 
-                                class="w-full bg-dark/50 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                                class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary"
                                 placeholder="Create a password"
                                 required
                             >
                             <button 
                                 type="button"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-secondary hover:text-light"
                                 id="register-toggle-password"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -152,24 +161,24 @@
                                 </svg>
                             </button>
                         </div>
-                        <p class="text-red-500 text-sm mt-1 hidden" id="register-password-error"></p>
+                        <p class="text-accent text-sm mt-1 hidden" id="register-password-error"></p>
                     </div>
                     
                     <div class="mb-6">
-                        <label for="confirm-password" class="block text-gray-400 mb-2">Confirm Password</label>
+                        <label for="confirm-password" class="block text-secondary mb-2">Confirm Password</label>
                         <input 
                             type="password" 
                             id="confirm-password" 
-                            class="w-full bg-dark/50 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                            class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary"
                             placeholder="Confirm your password"
                             required
                         >
-                        <p class="text-red-500 text-sm mt-1 hidden" id="confirm-password-error"></p>
+                        <p class="text-accent text-sm mt-1 hidden" id="confirm-password-error"></p>
                     </div>
                     
                     <button 
                         type="submit" 
-                        class="w-full bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 hover:shadow-neon"
+                        class="w-full bg-accent hover:bg-accent-dark text-light font-medium py-2 px-4 rounded-lg transition-all duration-300 hover:shadow-neon"
                     >
                         Create Account
                     </button>
@@ -178,7 +187,7 @@
         </div>
         
         <!-- Footer -->
-        <div class="mt-6 text-center text-gray-500 text-sm">
+        <div class="mt-6 text-center text-secondary text-sm">
             <p>© <span id="current-year"></span> ReCode. All rights reserved.</p>
         </div>
     </div>
@@ -194,19 +203,19 @@
         const registerForm = document.getElementById('register-form');
         
         loginTab.addEventListener('click', () => {
-            loginTab.classList.add('text-white', 'active-tab');
-            loginTab.classList.remove('text-gray-400');
-            registerTab.classList.add('text-gray-400');
-            registerTab.classList.remove('text-white', 'active-tab');
+            loginTab.classList.add('text-light', 'active-tab');
+            loginTab.classList.remove('text-secondary');
+            registerTab.classList.add('text-secondary');
+            registerTab.classList.remove('text-light', 'active-tab');
             loginForm.classList.remove('hidden');
             registerForm.classList.add('hidden');
         });
         
         registerTab.addEventListener('click', () => {
-            registerTab.classList.add('text-white', 'active-tab');
-            registerTab.classList.remove('text-gray-400');
-            loginTab.classList.add('text-gray-400');
-            loginTab.classList.remove('text-white', 'active-tab');
+            registerTab.classList.add('text-light', 'active-tab');
+            registerTab.classList.remove('text-secondary');
+            loginTab.classList.add('text-secondary');
+            loginTab.classList.remove('text-light', 'active-tab');
             registerForm.classList.remove('hidden');
             loginForm.classList.add('hidden');
         });
@@ -245,10 +254,10 @@
         }
         
         // Form validation and submission
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
+        const loginFormElement = document.getElementById('loginForm');
+        const registerFormElement = document.getElementById('registerFormElement');
         
-        loginForm.addEventListener('submit', (e) => {
+        loginFormElement.addEventListener('submit', (e) => {
             e.preventDefault();
             
             // Reset errors
@@ -276,12 +285,11 @@
             // Login successful
             localStorage.setItem('currentUser', JSON.stringify(user));
             
-            // Redirect to dashboard (for now, just show an alert)
-            alert('Login successful! Redirecting to dashboard...');
+            // Redirect to dashboard
             window.location.href = 'dashboard.html';
         });
         
-        registerForm.addEventListener('submit', (e) => {
+        registerFormElement.addEventListener('submit', (e) => {
             e.preventDefault();
             
             // Reset errors
@@ -345,8 +353,7 @@
             // Set as current user
             localStorage.setItem('currentUser', JSON.stringify(newUser));
             
-            // Redirect to dashboard (for now, just show an alert)
-            alert('Account created successfully! Redirecting to dashboard...');
+            // Redirect to dashboard
             window.location.href = 'dashboard.html';
         });
         
