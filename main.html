@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReCode - Your Coding Practice</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: '#1c4e80',
+                            dark: '#163e66'
+                        },
+                        secondary: '#7c909a',
+                        accent: {
+                            DEFAULT: '#ea6947',
+                            dark: '#d55a3a'
+                        },
+                        dark: {
+                            DEFAULT: '#23282e',
+                            lighter: '#2d343c'
+                        },
+                        light: '#d0dae5'
+                    },
+                    boxShadow: {
+                        'neon': '0 0 5px theme("colors.accent.DEFAULT"), 0 0 20px theme("colors.accent.DEFAULT")',
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .bg-grid {
+                background-image: 
+                    linear-gradient(rgba(28, 78, 128, 0.1) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(28, 78, 128, 0.1) 1px, transparent 1px);
+                background-size: 20px 20px;
+            }
+            .text-shadow {
+                text-shadow: 0 0 10px rgba(28, 78, 128, 0.5);
+            }
+            .contribution-cell {
+                width: 12px;
+                height: 12px;
+                border-radius: 2px;
+            }
+            .contribution-level-0 {
+                background-color: rgba(28, 78, 128, 0.1);
+            }
+            .contribution-level-1 {
+                background-color: rgba(28, 78, 128, 0.3);
+            }
+            .contribution-level-2 {
+                background-color: rgba(28, 78, 128, 0.5);
+            }
+            .contribution-level-3 {
+                background-color: rgba(28, 78, 128, 0.7);
+            }
+            .contribution-level-4 {
+                background-color: rgba(28, 78, 128, 0.9);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-dark bg-grid">
+    <div class="container mx-auto px-4 py-6">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-light text-shadow">Re<span class="text-accent">Code</span></h1>
+            <div class="flex items-center gap-4">
+                <span class="text-secondary" id="user-greeting">Welcome, User</span>
+                <button id="settings-btn" class="px-3 py-1 bg-dark-lighter hover:bg-primary text-light rounded-lg transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </button>
+                <button id="logout-btn" class="px-4 py-2 bg-dark-lighter hover:bg-accent text-light rounded-lg transition-colors">
+                    Logout
+                </button>
+            </div>
+        </header>
+
+        <!-- Main content -->
+        <main class="flex flex-col gap-8">
+            <!-- Today's Practice Section -->
+            <section class="bg-dark-lighter/80 backdrop-blur-sm rounded-xl p-6 border border-secondary/20">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold text-light">Today's Practice</h2>
+                    <div class="text-accent text-xl font-bold" id="today-count">12</div>
+                </div>
+                <p class="text-secondary mb-6">You have <span id="due-cards">12</span> cards due for review today.</p>
+                <div class="flex flex-wrap gap-4">
+                    <button id="start-practice-btn" class="bg-accent hover:bg-accent-dark text-light font-medium py-2 px-6 rounded-lg transition-all duration-300 hover:shadow-neon flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Start Practice
+                    </button>
+                    <button id="browse-cards-btn" class="bg-primary hover:bg-primary-dark text-light font-medium py-2 px-6 rounded-lg transition-all duration-300 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        Browse All Cards
+                    </button>
+                </div>
+            </section>
+
+            <!-- Decks Section -->
+            <section class="bg-dark-lighter/80 backdrop-blur-sm rounded-xl p-6 border border-secondary/20">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold text-light">Your Decks</h2>
+                    <button id="create-deck-btn" class="bg-accent hover:bg-accent-dark text-light font-medium py-1 px-4 rounded-lg transition-all duration-300 flex items-center text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        New Deck
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="decks-container">
+                    <!-- Sample Decks -->
+                    <div class="bg-dark/50 rounded-lg p-4 border border-secondary/20 hover:border-primary/50 transition-colors cursor-pointer">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-light font-medium">Sorting Algorithms</h3>
+                            <span class="text-accent text-sm">8 cards</span>
+                        </div>
+                        <p class="text-secondary text-sm mb-3">Classic sorting algorithms implementation and analysis</p>
+                        <div class="flex justify-between text-xs text-secondary">
+                            <span>5 due today</span>
+                            <span>Last practiced: 2 days ago</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-dark/50 rounded-lg p-4 border border-secondary/20 hover:border-primary/50 transition-colors cursor-pointer">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-light font-medium">Data Structures</h3>
+                            <span class="text-accent text-sm">12 cards</span>
+                        </div>
+                        <p class="text-secondary text-sm mb-3">Common data structures implementation and usage</p>
+                        <div class="flex justify-between text-xs text-secondary">
+                            <span>3 due today</span>
+                            <span>Last practiced: Today</span>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-dark/50 rounded-lg p-4 border border-secondary/20 hover:border-primary/50 transition-colors cursor-pointer">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-light font-medium">Dynamic Programming</h3>
+                            <span class="text-accent text-sm">6 cards</span>
+                        </div>
+                        <p class="text-secondary text-sm mb-3">DP problems and solutions with explanations</p>
+                        <div class="flex justify-between text-xs text-secondary">
+                            <span>4 due today</span>
+                            <span>Last practiced: 1 day ago</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Progress Section -->
+            <section class="bg-dark-lighter/80 backdrop-blur-sm rounded-xl p-6 border border-secondary/20">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold text-light">Your Progress</h2>
+                    <div class="flex gap-2 text-xs text-secondary">
+                        <span class="flex items-center">
+                            <div class="w-3 h-3 bg-primary/20 rounded-sm mr-1"></div>
+                            Less
+                        </span>
+                        <span class="flex items-center">
+                            <div class="w-3 h-3 bg-primary/90 rounded-sm mr-1"></div>
+                            More
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- GitHub-like Contribution Graph -->
+                <div class="overflow-x-auto pb-4">
+                    <div class="contribution-graph min-w-max">
+                        <div class="flex text-xs text-secondary mb-1 pl-8">
+                            <div class="w-12 text-center">Jan</div>
+                            <div class="w-12 text-center">Feb</div>
+                            <div class="w-12 text-center">Mar</div>
+                            <div class="w-12 text-center">Apr</div>
+                            <div class="w-12 text-center">May</div>
+                            <div class="w-12 text-center">Jun</div>
+                            <div class="w-12 text-center">Jul</div>
+                            <div class="w-12 text-center">Aug</div>
+                            <div class="w-12 text-center">Sep</div>
+                            <div class="w-12 text-center">Oct</div>
+                            <div class="w-12 text-center">Nov</div>
+                            <div class="w-12 text-center">Dec</div>
+                        </div>
+                        <div class="flex" id="contribution-graph">
+                            <!-- Days of week labels -->
+                            <div class="flex flex-col justify-between text-xs text-secondary pr-2 py-1">
+                                <div>Mon</div>
+                                <div>Wed</div>
+                                <div>Fri</div>
+                            </div>
+                            <!-- Contribution cells will be generated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Stats Summary -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                    <div class="bg-dark/50 rounded-lg p-3 border border-secondary/20">
+                        <div class="text-secondary text-sm mb-1">Total Cards</div>
+                        <div class="text-light text-xl font-bold">26</div>
+                    </div>
+                    <div class="bg-dark/50 rounded-lg p-3 border border-secondary/20">
+                        <div class="text-secondary text-sm mb-1">Mastered</div>
+                        <div class="text-light text-xl font-bold">14</div>
+                    </div>
+                    <div class="bg-dark/50 rounded-lg p-3 border border-secondary/20">
+                        <div class="text-secondary text-sm mb-1">Learning</div>
+                        <div class="text-light text-xl font-bold">12</div>
+                    </div>
+                    <div class="bg-dark/50 rounded-lg p-3 border border-secondary/20">
+                        <div class="text-secondary text-sm mb-1">Current Streak</div>
+                        <div class="text-light text-xl font-bold">7 days</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Create Deck Modal -->
+        <div id="create-deck-modal" class="fixed inset-0 bg-dark/80 flex items-center justify-center z-50 hidden">
+            <div class="bg-dark-lighter rounded-xl p-6 max-w-md w-full mx-4 border border-secondary/20">
+                <h3 class="text-xl font-semibold text-light mb-4">Create New Deck</h3>
+                <form id="create-deck-form">
+                    <div class="mb-4">
+                        <label for="deck-name" class="block text-secondary mb-2">Deck Name</label>
+                        <input 
+                            type="text" 
+                            id="deck-name" 
+                            class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary"
+                            placeholder="e.g., Graph Algorithms"
+                            required
+                        >
+                    </div>
+                    <div class="mb-6">
+                        <label for="deck-description" class="block text-secondary mb-2">Description</label>
+                        <textarea 
+                            id="deck-description" 
+                            class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary h-24"
+                            placeholder="Brief description of this deck"
+                        ></textarea>
+                    </div>
+                    <div class="flex justify-end gap-3">
+                        <button 
+                            type="button" 
+                            id="cancel-create-deck" 
+                            class="px-4 py-2 bg-dark hover:bg-dark-lighter text-secondary rounded-lg transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            type="submit" 
+                            class="px-4 py-2 bg-accent hover:bg-accent-dark text-light rounded-lg transition-colors"
+                        >
+                            Create Deck
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Add Card Modal -->
+        <div id="add-card-modal" class="fixed inset-0 bg-dark/80 flex items-center justify-center z-50 hidden">
+            <div class="bg-dark-lighter rounded-xl p-6 max-w-3xl w-full mx-4 border border-secondary/20">
+                <h3 class="text-xl font-semibold text-light mb-4">Add New Card</h3>
+                <form id="add-card-form">
+                    <div class="mb-4">
+                        <label for="card-deck" class="block text-secondary mb-2">Deck</label>
+                        <select 
+                            id="card-deck" 
+                            class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary"
+                            required
+                        >
+                            <option value="">Select a deck</option>
+                            <option value="sorting">Sorting Algorithms</option>
+                            <option value="data-structures">Data Structures</option>
+                            <option value="dynamic-programming">Dynamic Programming</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label for="card-title" class="block text-secondary mb-2">Title</label>
+                        <input 
+                            type="text" 
+                            id="card-title" 
+                            class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary"
+                            placeholder="e.g., Merge Sort Implementation"
+                            required
+                        >
+                    </div>
+                    <div class="mb-4">
+                        <label for="card-question" class="block text-secondary mb-2">Question/Problem</label>
+                        <textarea 
+                            id="card-question" 
+                            class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary h-24"
+                            placeholder="Describe the problem or question"
+                            required
+                        ></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label for="card-language" class="block text-secondary mb-2">Language</label>
+                        <select 
+                            id="card-language" 
+                            class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary"
+                        >
+                            <option value="javascript">JavaScript</option>
+                            <option value="python">Python</option>
+                            <option value="java">Java</option>
+                            <option value="cpp">C++</option>
+                        </select>
+                    </div>
+                    <div class="mb-6">
+                        <label for="card-solution" class="block text-secondary mb-2">Solution</label>
+                        <textarea 
+                            id="card-solution" 
+                            class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary h-40 font-mono"
+                            placeholder="// Your solution code here"
+                            required
+                        ></textarea>
+                    </div>
+                    <div class="flex justify-end gap-3">
+                        <button 
+                            type="button" 
+                            id="cancel-add-card" 
+                            class="px-4 py-2 bg-dark hover:bg-dark-lighter text-secondary rounded-lg transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            type="submit" 
+                            class="px-4 py-2 bg-accent hover:bg-accent-dark text-light rounded-lg transition-colors"
+                        >
+                            Add Card
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Practice Card Modal -->
+        <div id="practice-modal" class="fixed inset-0 bg-dark/80 flex items-center justify-center z-50 hidden">
+            <div class="bg-dark-lighter rounded-xl p-6 max-w-3xl w-full mx-4 border border-secondary/20">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold text-light" id="practice-card-title">Merge Sort Implementation</h3>
+                    <div class="text-secondary text-sm">Card 1 of 12</div>
+                </div>
+                
+                <div id="question-container" class="mb-6">
+                    <div class="text-secondary mb-2">Question:</div>
+                    <div class="bg-dark/50 border border-secondary/30 rounded-lg p-4 text-light">
+                        <p>Implement the merge sort algorithm that sorts an array of integers in ascending order.</p>
+                    </div>
+                </div>
+                
+                <div id="answer-container" class="mb-6 hidden">
+                    <div class="text-secondary mb-2">Solution:</div>
+                    <div class="bg-dark/50 border border-secondary/30 rounded-lg p-4 text-light font-mono text-sm whitespace-pre overflow-x-auto">
+function mergeSort(arr) {
+    if (arr.length <= 1) {
+        return arr;
+    }
+    
+    const mid = Math.floor(arr.length / 2);
+    const left = mergeSort(arr.slice(0, mid));
+    const right = mergeSort(arr.slice(mid));
+    
+    return merge(left, right);
+}
+
+function merge(left, right) {
+    let result = [];
+    let i = 0, j = 0;
+    
+    while (i < left.length && j < right.length) {
+        if (left[i] <= right[j]) {
+            result.push(left[i]);
+            i++;
+        } else {
+            result.push(right[j]);
+            j++;
+        }
+    }
+    
+    return result.concat(left.slice(i)).concat(right.slice(j));
+}
+                    </div>
+                </div>
+                
+                <div id="show-answer-btn-container" class="flex justify-center mb-6">
+                    <button 
+                        id="show-answer-btn" 
+                        class="px-6 py-2 bg-primary hover:bg-primary-dark text-light rounded-lg transition-colors"
+                    >
+                        Show Answer
+                    </button>
+                </div>
+                
+                <div id="rating-container" class="hidden">
+                    <div class="text-secondary mb-3 text-center">How well did you know this?</div>
+                    <div class="flex justify-between gap-2">
+                        <button class="rating-btn flex-1 py-2 bg-red-500/20 hover:bg-red-500/40 text-light rounded-lg transition-colors" data-rating="1">
+                            Again
+                        </button>
+                        <button class="rating-btn flex-1 py-2 bg-orange-500/20 hover:bg-orange-500/40 text-light rounded-lg transition-colors" data-rating="2">
+                            Hard
+                        </button>
+                        <button class="rating-btn flex-1 py-2 bg-yellow-500/20 hover:bg-yellow-500/40 text-light rounded-lg transition-colors" data-rating="3">
+                            Good
+                        </button>
+                        <button class="rating-btn flex-1 py-2 bg-green-500/20 hover:bg-green-500/40 text-light rounded-lg transition-colors" data-rating="4">
+                            Easy
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex justify-end mt-6">
+                    <button 
+                        type="button" 
+                        id="close-practice" 
+                        class="px-4 py-2 bg-dark hover:bg-dark-lighter text-secondary rounded-lg transition-colors"
+                    >
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if user is logged in
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            
+            if (!currentUser) {
+                // Redirect to login page if not logged in
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Update user greeting
+            document.getElementById('user-greeting').textContent = `Welcome, ${currentUser.username}`;
+            
+            // Logout functionality
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'index.html';
+            });
+            
+            // Generate contribution graph
+            generateContributionGraph();
+            
+            // Modal functionality
+            setupModals();
+            
+            // Practice functionality
+            setupPractice();
+            
+            // Initialize decks and cards from localStorage
+            initializeData();
+        });
+        
+        function generateContributionGraph() {
+            const graphContainer = document.getElementById('contribution-graph');
+            const daysInYear = 365;
+            const weeksInYear = Math.ceil(daysInYear / 7);
+            
+            // Generate random contribution data for demonstration
+            const contributionData = {};
+            const today = new Date();
+            
+            for (let i = 0; i < daysInYear; i++) {
+                const date = new Date();
+                date.setDate(today.getDate() - (daysInYear - i));
+                const dateString = date.toISOString().split('T')[0];
+                
+                // Random contribution level (0-4)
+                const level = Math.floor(Math.random() * 5);
+                contributionData[dateString] = level;
+            }
+            
+            // Create week columns
+            for (let week = 0; week < weeksInYear; week++) {
+                const weekColumn = document.createElement('div');
+                weekColumn.className = 'flex flex-col gap-1 mr-1';
+                
+                // Create day cells for each week
+                for (let day = 0; day < 7; day++) {
+                    const date = new Date();
+                    date.setDate(today.getDate() - (daysInYear - (week * 7 + day)));
+                    const dateString = date.toISOString().split('T')[0];
+                    
+                    const level = contributionData[dateString] || 0;
+                    
+                    const dayCell = document.createElement('div');
+                    dayCell.className = `contribution-cell contribution-level-${level}`;
+                    dayCell.title = `${dateString}: ${level} contributions`;
+                    
+                    weekColumn.appendChild(dayCell);
+                }
+                
+                graphContainer.appendChild(weekColumn);
+            }
+        }
+        
+        function setupModals() {
+            // Create Deck Modal
+            const createDeckBtn = document.getElementById('create-deck-btn');
+            const createDeckModal = document.getElementById('create-deck-modal');
+            const cancelCreateDeck = document.getElementById('cancel-create-deck');
+            const createDeckForm = document.getElementById('create-deck-form');
+            
+            createDeckBtn.addEventListener('click', () => {
+                createDeckModal.classList.remove('hidden');
+            });
+            
+            cancelCreateDeck.addEventListener('click', () => {
+                createDeckModal.classList.add('hidden');
+            });
+            
+            createDeckForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const deckName = document.getElementById('deck-name').value;
+                const deckDescription = document.getElementById('deck-description').value;
+                
+                // Save deck to localStorage
+                const decks = JSON.parse(localStorage.getItem('decks') || '[]');
+                const newDeck = {
+                    id: Date.now(),
+                    name: deckName,
+                    description: deckDescription,
+                    cards: [],
+                    created: new Date().toISOString()
+                };
+                
+                decks.push(newDeck);
+                localStorage.setItem('decks', JSON.stringify(decks));
+                
+                // Close modal and reset form
+                createDeckModal.classList.add('hidden');
+                createDeckForm.reset();
+                
+                // Refresh decks display
+                displayDecks();
+            });
+            
+            // Add Card Modal
+            const addCardBtn = document.createElement('button');
+            addCardBtn.id = 'add-card-btn';
+            addCardBtn.className = 'bg-accent hover:bg-accent-dark text-light font-medium py-1 px-4 rounded-lg transition-all duration-300 flex items-center text-sm fixed bottom-6 right-6 shadow-lg';
+            addCardBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Add Card
+            `;
+            document.body.appendChild(addCardBtn);
+            
+            const addCardModal = document.getElementById('add-card-modal');
+            const cancelAddCard = document.getElementById('cancel-add-card');
+            const addCardForm = document.getElementById('add-card-form');
+            
+            addCardBtn.addEventListener('click', () => {
+                addCardModal.classList.remove('hidden');
+            });
+            
+            cancelAddCard.addEventListener('click', () => {
+                addCardModal.classList.add('hidden');
+            });
+            
+            addCardForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const deckId = document.getElementById('card-deck').value;
+                const title = document.getElementById('card-title').value;
+                const question = document.getElementById('card-question').value;
+                const language = document.getElementById('card-language').value;
+                const solution = document.getElementById('card-solution').value;
+                
+                // Save card to localStorage
+                const decks = JSON.parse(localStorage.getItem('decks') || '[]');
+                const deckIndex = decks.findIndex(d => d.id === deckId);
+                
+                if (deckIndex !== -1) {
+                    const newCard = {
+                        id: Date.now(),
+                        title,
+                        question,
+                        language,
+                        solution,
+                        interval: 1,
+                        ease: 2.5,
+                        nextReview: new Date().toISOString().split('T')[0],
+                        created: new Date().toISOString()
+                    };
+                    
+                    decks[deckIndex].cards.push(newCard);
+                    localStorage.setItem('decks', JSON.stringify(decks));
+                }
+                
+                // Close modal and reset form
+                addCardModal.classList.add('hidden');
+                addCardForm.reset();
+                
+                // Update due cards count
+                updateDueCardsCount();
+            });
+            
+            // Practice Modal
+            const practiceModal = document.getElementById('practice-modal');
+            const closePractice = document.getElementById('close-practice');
+            const showAnswerBtn = document.getElementById('show-answer-btn');
+            const answerContainer = document.getElementById('answer-container');
+            const ratingContainer = document.getElementById('rating-container');
+            const showAnswerBtnContainer = document.getElementById('show-answer-btn-container');
+            
+            closePractice.addEventListener('click', () => {
+                practiceModal.classList.add('hidden');
+                // Reset practice modal state
+                answerContainer.classList.add('hidden');
+                ratingContainer.classList.add('hidden');
+                showAnswerBtnContainer.classList.remove('hidden');
+            });
+            
+            showAnswerBtn.addEventListener('click', () => {
+                answerContainer.classList.remove('hidden');
+                ratingContainer.classList.remove('hidden');
+                showAnswerBtnContainer.classList.add('hidden');
+            });
+            
+            // Rating buttons
+            const ratingBtns = document.querySelectorAll('.rating-btn');
+            ratingBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const rating = parseInt(btn.dataset.rating);
+                    // Handle rating logic here
+                    
+                    // Close modal or show next card
+                    practiceModal.classList.add('hidden');
+                    
+                    // Reset practice modal state
+                    answerContainer.classList.add('hidden');
+                    ratingContainer.classList.add('hidden');
+                    showAnswerBtnContainer.classList.remove('hidden');
+                });
+            });
+        }
+        
+        function setupPractice() {
+            const startPracticeBtn = document.getElementById('start-practice-btn');
+            const practiceModal = document.getElementById('practice-modal');
+            
+            startPracticeBtn.addEventListener('click', () => {
+                practiceModal.classList.remove('hidden');
+                // Load first due card
+                // This would be implemented with actual card data
+            });
+        }
+        
+        function initializeData() {
+            // Initialize with sample data if none exists
+            if (!localStorage.getItem('decks')) {
+                const sampleDecks = [
+                    {
+                        id: 'sorting',
+                        name: 'Sorting Algorithms',
+                        description: 'Classic sorting algorithms implementation and analysis',
+                        cards: [
+                            {
+                                id: 1,
+                                title: 'Merge Sort',
+                                question: 'Implement the merge sort algorithm that sorts an array of integers in ascending order.',
+                                language: 'javascript',
+                                solution: `function mergeSort(arr) {
+    if (arr.length <= 1) {
+        return arr;
+    }
+    
+    const mid = Math.floor(arr.length / 2);
+    const left = mergeSort(arr.slice(0, mid));
+    const right = mergeSort(arr.slice(mid));
+    
+    return merge(left, right);
+}
+
+function merge(left, right) {
+    let result = [];
+    let i = 0, j = 0;
+    
+    while (i < left.length && j < right.length) {
+        if (left[i] <= right[j]) {
+            result.push(left[i]);
+            i++;
+        } else {
+            result.push(right[j]);
+            j++;
+        }
+    }
+    
+    return result.concat(left.slice(i)).concat(right.slice(j));
+}`,
+                                interval: 1,
+                                ease: 2.5,
+                                nextReview: new Date().toISOString().split('T')[0],
+                                created: new Date().toISOString()
+                            }
+                        ],
+                        created: new Date().toISOString()
+                    }
+                ];
+                
+                localStorage.setItem('decks', JSON.stringify(sampleDecks));
+            }
+            
+            // Display decks
+            displayDecks();
+            
+            // Update due cards count
+            updateDueCardsCount();
+        }
+        
+        function displayDecks() {
+            const decksContainer = document.getElementById('decks-container');
+            const decks = JSON.parse(localStorage.getItem('decks') || '[]');
+            
+            // Clear container
+            decksContainer.innerHTML = '';
+            
+            // Add decks
+            decks.forEach(deck => {
+                const deckElement = document.createElement('div');
+                deckElement.className = 'bg-dark/50 rounded-lg p-4 border border-secondary/20 hover:border-primary/50 transition-colors cursor-pointer';
+                
+                const dueCards = deck.cards.filter(card => {
+                    const today = new Date().toISOString().split('T')[0];
+                    return card.nextReview <= today;
+                });
+                
+                const lastPracticed = deck.cards.length > 0 
+                    ? new Date(Math.max(...deck.cards.map(c => c.lastReviewed ? new Date(c.lastReviewed) : 0)))
+                    : null;
+                
+                const lastPracticedText = lastPracticed && lastPracticed.getTime() > 0
+                    ? getRelativeTimeText(lastPracticed)
+                    : 'Never';
+                
+                deckElement.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-light font-medium">${deck.name}</h3>
+                        <span class="text-accent text-sm">${deck.cards.length} cards</span>
+                    </div>
+                    <p class="text-secondary text-sm mb-3">${deck.description}</p>
+                    <div class="flex justify-between text-xs text-secondary">
+                        <span>${dueCards.length} due today</span>
+                        <span>Last practiced: ${lastPracticedText}</span>
+                    </div>
+                `;
+                
+                decksContainer.appendChild(deckElement);
+            });
+        }
+        
+        function updateDueCardsCount() {
+            const dueCardsElement = document.getElementById('due-cards');
+            const todayCountElement = document.getElementById('today-count');
+            const decks = JSON.parse(localStorage.getItem('decks') || '[]');
+            
+            let dueCount = 0;
+            const today = new Date().toISOString().split('T')[0];
+            
+            decks.forEach(deck => {
+                deck.cards.forEach(card => {
+                    if (card.nextReview <= today) {
+                        dueCount++;
+                    }
+                });
+            });
+            
+            dueCardsElement.textContent = dueCount;
+            todayCountElement.textContent = dueCount;
+        }
+        
+        function getRelativeTimeText(date) {
+            const now = new Date();
+            const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 0) {
+                return 'Today';
+            } else if (diffDays === 1) {
+                return 'Yesterday';
+            } else if (diffDays < 7) {
+                return `${diffDays} days ago`;
+            } else if (diffDays < 30) {
+                const weeks = Math.floor(diffDays / 7);
+                return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`;
+            } else {
+                const months = Math.floor(diffDays / 30);
+                return `${months} ${months === 1 ? 'month' : 'months'} ago`;
+            }
+        }
+    </script>
+</body>
+</html>
