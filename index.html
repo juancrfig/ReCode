@@ -48,8 +48,122 @@
             }
         }
     </style>
+    <style>
+        /* Grid Animation Styles */
+        .grid-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 20px 20px;
+            background-image: 
+                linear-gradient(rgba(234, 105, 71, 0) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(234, 105, 71, 0) 1px, transparent 1px);
+            opacity: 0;
+        }
+        
+        .wave {
+            position: absolute;
+            width: 300%;
+            height: 300%;
+            background: radial-gradient(circle, rgba(234, 105, 71, 0.3) 0%, rgba(234, 105, 71, 0) 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        @keyframes wave-top-left {
+            0% {
+                top: 0;
+                left: 0;
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0.8;
+            }
+            100% {
+                top: 100%;
+                left: 100%;
+                transform: translate(-50%, -50%) scale(3);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes wave-top-right {
+            0% {
+                top: 0;
+                left: 100%;
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0.8;
+            }
+            100% {
+                top: 100%;
+                left: 0;
+                transform: translate(-50%, -50%) scale(3);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes wave-bottom-left {
+            0% {
+                top: 100%;
+                left: 0;
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0.8;
+            }
+            100% {
+                top: 0;
+                left: 100%;
+                transform: translate(-50%, -50%) scale(3);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes wave-bottom-right {
+            0% {
+                top: 100%;
+                left: 100%;
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0.8;
+            }
+            100% {
+                top: 0;
+                left: 0;
+                transform: translate(-50%, -50%) scale(3);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes grid-pulse {
+            0% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+    </style>
 </head>
 <body class="min-h-screen bg-dark bg-grid flex items-center justify-center p-4">
+    <!-- Grid Animation Container -->
+    <div class="grid-container">
+        <div class="grid-overlay" id="grid-overlay"></div>
+        <div class="wave" id="wave"></div>
+    </div>
+
     <div class="w-full max-w-md">
         <!-- Logo and Title -->
         <div class="text-center mb-8">
@@ -372,6 +486,47 @@
             const errorElement = document.getElementById(id);
             errorElement.classList.add('hidden');
         }
+
+        // Grid Animation
+        const gridOverlay = document.getElementById('grid-overlay');
+        const wave = document.getElementById('wave');
+        
+        // Animation settings
+        const animationDuration = 15; // seconds
+        const gridPulseDuration = 8; // seconds
+        
+        // Set up grid overlay animation
+        gridOverlay.style.animation = `grid-pulse ${gridPulseDuration}s ease-in-out infinite`;
+        
+        // Function to start a new wave animation
+        function startWaveAnimation() {
+            // Randomly choose a corner to start from
+            const corners = [
+                { animation: 'wave-top-left', delay: 0 },
+                { animation: 'wave-top-right', delay: 0 },
+                { animation: 'wave-bottom-left', delay: 0 },
+                { animation: 'wave-bottom-right', delay: 0 }
+            ];
+            
+            const randomCorner = corners[Math.floor(Math.random() * corners.length)];
+            
+            // Reset wave element
+            wave.style.animation = 'none';
+            wave.offsetHeight; // Trigger reflow
+            
+            // Apply new animation
+            wave.style.animation = `${randomCorner.animation} ${animationDuration}s cubic-bezier(0.215, 0.610, 0.355, 1.000) forwards`;
+            
+            // Schedule next wave
+            setTimeout(() => {
+                startWaveAnimation();
+            }, animationDuration * 500);
+        }
+        
+        // Start the animation when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            startWaveAnimation();
+        });
     </script>
 </body>
 </html>
