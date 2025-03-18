@@ -3,613 +3,368 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algorithm Practice - Spaced Repetition</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/python.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/java.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/javascript.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.15.0/ace.js"></script>
+    <title>Algorithm Practice - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            DEFAULT: '#3B82F6',
+                            dark: '#2563EB'
+                        },
+                        dark: {
+                            DEFAULT: '#0F172A',
+                            lighter: '#1E293B'
+                        }
+                    },
+                    boxShadow: {
+                        'neon': '0 0 5px theme("colors.primary.DEFAULT"), 0 0 20px theme("colors.primary.DEFAULT")',
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .bg-grid {
+                background-image: 
+                    linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+                background-size: 20px 20px;
+            }
+            .text-shadow {
+                text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
-    <div class="container mx-auto px-4 py-8">
-        <header class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-800">Algorithm Practice</h1>
-            <div class="flex gap-4">
-                <button id="statsBtn" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition">Stats</button>
-                <button id="settingsBtn" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition">Settings</button>
+<body class="min-h-screen bg-dark bg-grid flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <!-- Logo and Title -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-white text-shadow mb-2">Re<span class="text-primary">Code</span></h1>
+            <p class="text-gray-400">Master coding algorithms with spaced repetition</p>
+        </div>
+        
+        <!-- Card Container -->
+        <div class="bg-dark-lighter/80 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-gray-700">
+            <!-- Tabs -->
+            <div class="flex border-b border-gray-700" id="tabs">
+                <button class="flex-1 py-4 text-white font-medium text-center active-tab" id="login-tab">Login</button>
+                <button class="flex-1 py-4 text-gray-400 font-medium text-center" id="register-tab">Register</button>
             </div>
-        </header>
-
-        <!-- Main content -->
-        <main class="flex flex-col gap-8">
-            <!-- Welcome screen -->
-            <div id="welcomeScreen" class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-2xl font-semibold mb-4">Welcome to Algorithm Practice</h2>
-                <p class="mb-4">Your spaced repetition system for mastering coding algorithms.</p>
-                <div class="flex gap-4">
-                    <button id="startPracticeBtn" class="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Start Practice</button>
-                    <button id="addNewCardBtn" class="px-6 py-3 bg-green-600 text-white rounded hover:bg-green-700 transition">Add New Algorithm</button>
-                </div>
-                <div class="mt-6">
-                    <h3 class="text-xl font-medium mb-2">Today's Queue</h3>
-                    <p id="todayCount" class="text-lg font-medium text-blue-600">0 algorithms to practice</p>
-                </div>
-            </div>
-
-            <!-- Practice card -->
-            <div id="practiceScreen" class="hidden">
-                <div class="bg-white p-6 rounded-lg shadow-md">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-2xl font-semibold" id="challengeTitle">Merge Sort Algorithm</h2>
-                        <div class="flex gap-2">
-                            <select id="languageSelect" class="px-3 py-1 border rounded">
-                                <option value="python">Python</option>
-                                <option value="java">Java</option>
-                                <option value="javascript">JavaScript</option>
-                            </select>
-                        </div>
-                    </div>
+            
+            <!-- Login Form -->
+            <div id="login-form" class="p-6">
+                <form id="loginForm">
                     <div class="mb-4">
-                        <div class="mb-2 font-medium">Description:</div>
-                        <div id="challengeDescription" class="text-gray-700">
-                            Implement a merge sort algorithm that sorts an array of integers in ascending order.
-                        </div>
+                        <label for="login-email" class="block text-gray-400 mb-2">Email</label>
+                        <input 
+                            type="email" 
+                            id="login-email" 
+                            class="w-full bg-dark/50 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                            placeholder="Enter your email"
+                            required
+                        >
+                        <p class="text-red-500 text-sm mt-1 hidden" id="login-email-error"></p>
                     </div>
+                    
+                    <div class="mb-6">
+                        <label for="login-password" class="block text-gray-400 mb-2">Password</label>
+                        <div class="relative">
+                            <input 
+                                type="password" 
+                                id="login-password" 
+                                class="w-full bg-dark/50 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                                placeholder="Enter your password"
+                                required
+                            >
+                            <button 
+                                type="button"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                                id="login-toggle-password"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="text-red-500 text-sm mt-1 hidden" id="login-password-error"></p>
+                    </div>
+                    
+                    <button 
+                        type="submit" 
+                        class="w-full bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 hover:shadow-neon"
+                    >
+                        Sign In
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Register Form -->
+            <div id="register-form" class="p-6 hidden">
+                <form id="registerForm">
                     <div class="mb-4">
-                        <div class="mb-2 font-medium">Your Solution:</div>
-                        <div id="editor" class="h-64 w-full border rounded"></div>
+                        <label for="register-username" class="block text-gray-400 mb-2">Username</label>
+                        <input 
+                            type="text" 
+                            id="register-username" 
+                            class="w-full bg-dark/50 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                            placeholder="Choose a username"
+                            required
+                        >
+                        <p class="text-red-500 text-sm mt-1 hidden" id="register-username-error"></p>
                     </div>
-                    <div class="flex justify-between mt-6">
-                        <button id="showSolutionBtn" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition">Show Solution</button>
-                        <div>
-                            <button id="runCodeBtn" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition mr-2">Run Code</button>
-                            <button id="checkSolutionBtn" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">Check Solution</button>
+                    
+                    <div class="mb-4">
+                        <label for="register-email" class="block text-gray-400 mb-2">Email</label>
+                        <input 
+                            type="email" 
+                            id="register-email" 
+                            class="w-full bg-dark/50 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                            placeholder="Enter your email"
+                            required
+                        >
+                        <p class="text-red-500 text-sm mt-1 hidden" id="register-email-error"></p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="register-password" class="block text-gray-400 mb-2">Password</label>
+                        <div class="relative">
+                            <input 
+                                type="password" 
+                                id="register-password" 
+                                class="w-full bg-dark/50 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                                placeholder="Create a password"
+                                required
+                            >
+                            <button 
+                                type="button"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                                id="register-toggle-password"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                            </button>
                         </div>
+                        <p class="text-red-500 text-sm mt-1 hidden" id="register-password-error"></p>
                     </div>
-                </div>
-
-                <!-- Solution rating -->
-                <div id="ratingScreen" class="hidden mt-6 bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-xl font-medium mb-4">How well did you do?</h3>
-                    <div class="flex justify-between max-w-md mx-auto">
-                        <button class="rating-btn px-4 py-2 bg-red-100 rounded hover:bg-red-200 transition" data-rating="1">Again</button>
-                        <button class="rating-btn px-4 py-2 bg-orange-100 rounded hover:bg-orange-200 transition" data-rating="2">Hard</button>
-                        <button class="rating-btn px-4 py-2 bg-yellow-100 rounded hover:bg-yellow-200 transition" data-rating="3">Good</button>
-                        <button class="rating-btn px-4 py-2 bg-green-100 rounded hover:bg-green-200 transition" data-rating="4">Easy</button>
+                    
+                    <div class="mb-6">
+                        <label for="confirm-password" class="block text-gray-400 mb-2">Confirm Password</label>
+                        <input 
+                            type="password" 
+                            id="confirm-password" 
+                            class="w-full bg-dark/50 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary"
+                            placeholder="Confirm your password"
+                            required
+                        >
+                        <p class="text-red-500 text-sm mt-1 hidden" id="confirm-password-error"></p>
                     </div>
-                </div>
-
-                <!-- Solution display -->
-                <div id="solutionScreen" class="hidden mt-6 bg-white p-6 rounded-lg shadow-md">
-                    <h3 class="text-xl font-medium mb-4">Reference Solution</h3>
-                    <pre><code id="solutionCode" class="language-python"></code></pre>
-                </div>
+                    
+                    <button 
+                        type="submit" 
+                        class="w-full bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 hover:shadow-neon"
+                    >
+                        Create Account
+                    </button>
+                </form>
             </div>
-
-            <!-- Add new card screen -->
-            <div id="addCardScreen" class="hidden bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-2xl font-semibold mb-4">Add New Algorithm Challenge</h2>
-                <div class="mb-4">
-                    <label class="block mb-2 font-medium">Title:</label>
-                    <input id="newCardTitle" type="text" class="w-full px-3 py-2 border rounded" placeholder="e.g., Merge Sort">
-                </div>
-                <div class="mb-4">
-                    <label class="block mb-2 font-medium">Description:</label>
-                    <textarea id="newCardDescription" class="w-full px-3 py-2 border rounded h-24" placeholder="Describe the algorithm challenge"></textarea>
-                </div>
-                <div class="mb-4">
-                    <label class="block mb-2 font-medium">Language:</label>
-                    <select id="newCardLanguage" class="px-3 py-2 border rounded">
-                        <option value="python">Python</option>
-                        <option value="java">Java</option>
-                        <option value="javascript">JavaScript</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block mb-2 font-medium">Reference Solution:</label>
-                    <div id="newCardSolutionEditor" class="h-64 w-full border rounded"></div>
-                </div>
-                <div class="flex justify-between mt-6">
-                    <button id="cancelAddCardBtn" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition">Cancel</button>
-                    <button id="saveCardBtn" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Save Challenge</button>
-                </div>
-            </div>
-
-            <!-- Stats screen -->
-            <div id="statsScreen" class="hidden bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-2xl font-semibold mb-4">Practice Statistics</h2>
-                <div class="flex flex-wrap gap-4 mb-6">
-                    <div class="bg-blue-50 p-4 rounded-lg flex-1">
-                        <h3 class="text-lg font-medium mb-2">Total Challenges</h3>
-                        <p id="totalChallenges" class="text-2xl font-bold text-blue-600">0</p>
-                    </div>
-                    <div class="bg-green-50 p-4 rounded-lg flex-1">
-                        <h3 class="text-lg font-medium mb-2">Mastered</h3>
-                        <p id="masteredChallenges" class="text-2xl font-bold text-green-600">0</p>
-                    </div>
-                    <div class="bg-yellow-50 p-4 rounded-lg flex-1">
-                        <h3 class="text-lg font-medium mb-2">In Progress</h3>
-                        <p id="inProgressChallenges" class="text-2xl font-bold text-yellow-600">0</p>
-                    </div>
-                </div>
-                <div class="mb-6">
-                    <h3 class="text-lg font-medium mb-2">Practice History</h3>
-                    <div class="flex gap-1 h-32 items-end">
-                        <div id="practiceChart" class="flex-1 flex gap-1"></div>
-                    </div>
-                </div>
-                <button id="backFromStatsBtn" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition">Back</button>
-            </div>
-
-            <!-- Settings screen -->
-            <div id="settingsScreen" class="hidden bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-2xl font-semibold mb-4">Settings</h2>
-                <div class="mb-4">
-                    <label class="block mb-2 font-medium">Daily New Cards Limit:</label>
-                    <input id="newCardsLimit" type="number" min="1" max="20" value="5" class="w-32 px-3 py-2 border rounded">
-                </div>
-                <div class="mb-4">
-                    <label class="block mb-2 font-medium">Daily Review Limit:</label>
-                    <input id="reviewLimit" type="number" min="1" max="100" value="20" class="w-32 px-3 py-2 border rounded">
-                </div>
-                <div class="mb-4">
-                    <label class="block mb-2 font-medium">Theme:</label>
-                    <select id="themeSelect" class="px-3 py-2 border rounded">
-                        <option value="light">Light</option>
-                        <option value="dark">Dark</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="block mb-2 font-medium">
-                        <input id="enableSyntaxHighlighting" type="checkbox" checked class="mr-2">
-                        Enable Syntax Highlighting
-                    </label>
-                </div>
-                <div class="mb-4">
-                    <label class="block mb-2 font-medium">
-                        <input id="exportData" type="button" value="Export Data" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition">
-                    </label>
-                </div>
-                <div class="mb-4">
-                    <label class="block mb-2 font-medium">
-                        <input id="importData" type="file" accept=".json" class="hidden">
-                        <span class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition cursor-pointer">Import Data</span>
-                    </label>
-                </div>
-                <button id="backFromSettingsBtn" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition">Back</button>
-            </div>
-        </main>
+        </div>
+        
+        <!-- Footer -->
+        <div class="mt-6 text-center text-gray-500 text-sm">
+            <p>© <span id="current-year"></span> ReCode. All rights reserved.</p>
+        </div>
     </div>
 
     <script>
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initialize Ace editor
-            const editor = ace.edit("editor");
-            editor.setTheme("ace/theme/monokai");
-            editor.session.setMode("ace/mode/python");
-            editor.setFontSize(14);
-
-            const newCardSolutionEditor = ace.edit("newCardSolutionEditor");
-            newCardSolutionEditor.setTheme("ace/theme/monokai");
-            newCardSolutionEditor.session.setMode("ace/mode/python");
-            newCardSolutionEditor.setFontSize(14);
-
-            // Initialize data
-            let cards = JSON.parse(localStorage.getItem('algorithm-cards') || '[]');
-            let settings = JSON.parse(localStorage.getItem('algorithm-settings') || '{"newCardsLimit":5,"reviewLimit":20,"theme":"light"}');
-            let stats = JSON.parse(localStorage.getItem('algorithm-stats') || '{"practiced":{},"mastered":0,"inProgress":0}');
-            let currentCardIndex = -1;
-            let todayCards = [];
-
-            // Sample data for new installations
-            if (cards.length === 0) {
-                cards = [
-                    {
-                        id: "merge-sort",
-                        title: "Merge Sort Algorithm",
-                        description: "Implement a merge sort algorithm that sorts an array of integers in ascending order.",
-                        language: "python",
-                        solution: `def merge_sort(arr):
-    if len(arr) <= 1:
-        return arr
+        // Set current year in footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
         
-    mid = len(arr) // 2
-    left = merge_sort(arr[:mid])
-    right = merge_sort(arr[mid:])
-    
-    return merge(left, right)
-
-def merge(left, right):
-    result = []
-    i = j = 0
-    
-    while i < len(left) and j < len(right):
-        if left[i] <= right[j]:
-            result.append(left[i])
-            i += 1
-        else:
-            result.append(right[j])
-            j += 1
-    
-    result.extend(left[i:])
-    result.extend(right[j:])
-    return result
-
-# Example usage
-arr = [38, 27, 43, 3, 9, 82, 10]
-sorted_arr = merge_sort(arr)
-print(sorted_arr)  # Output: [3, 9, 10, 27, 38, 43, 82]`,
-                        interval: 1,
-                        ease: 2.5,
-                        nextReview: new Date().toISOString().split('T')[0],
-                        created: new Date().toISOString()
-                    },
-                    {
-                        id: "binary-search",
-                        title: "Binary Search Algorithm",
-                        description: "Implement a binary search algorithm that finds the position of a target value within a sorted array.",
-                        language: "python",
-                        solution: `def binary_search(arr, target):
-    left, right = 0, len(arr) - 1
-    
-    while left <= right:
-        mid = (left + right) // 2
+        // Tab switching
+        const loginTab = document.getElementById('login-tab');
+        const registerTab = document.getElementById('register-tab');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
         
-        if arr[mid] == target:
-            return mid
-        elif arr[mid] < target:
-            left = mid + 1
-        else:
-            right = mid - 1
-    
-    return -1  # Target not found
-
-# Example usage
-sorted_arr = [3, 9, 10, 27, 38, 43, 82]
-position = binary_search(sorted_arr, 27)
-print(position)  # Output: 3`,
-                        interval: 1,
-                        ease: 2.5,
-                        nextReview: new Date().toISOString().split('T')[0],
-                        created: new Date().toISOString()
-                    }
-                ];
-                localStorage.setItem('algorithm-cards', JSON.stringify(cards));
-            }
-
-            // Functions to handle the SM-2 algorithm (Anki's spaced repetition algorithm)
-            function updateCardInterval(card, rating) {
-                // Based on the SuperMemo-2 algorithm
-                let newEase = card.ease;
-                let newInterval = card.interval;
-                
-                if (rating === 1) {
-                    // Again - Reset interval to 1
-                    newInterval = 1;
-                } else {
-                    // Adjust ease based on performance
-                    if (rating === 2) {
-                        newEase = Math.max(1.3, card.ease - 0.15);
-                    } else if (rating === 3) {
-                        newEase = card.ease;
-                    } else if (rating === 4) {
-                        newEase = card.ease + 0.15;
-                    }
-                    
-                    // Calculate new interval
-                    if (card.interval === 1 && rating >= 2) {
-                        newInterval = 6;
-                    } else if (rating >= 2) {
-                        newInterval = Math.round(card.interval * card.ease);
-                    }
-                }
-                
-                // Update card
-                card.ease = newEase;
-                card.interval = newInterval;
-                
-                // Calculate next review date
-                const today = new Date();
-                const nextReview = new Date(today);
-                nextReview.setDate(today.getDate() + newInterval);
-                card.nextReview = nextReview.toISOString().split('T')[0];
-                
-                return card;
-            }
-
-            // Function to get today's cards
-            function getTodayCards() {
-                const today = new Date().toISOString().split('T')[0];
-                const dueCards = cards.filter(card => card.nextReview <= today);
-                const newCards = cards.filter(card => !card.lastReviewed).slice(0, settings.newCardsLimit);
-                const reviewCards = dueCards.filter(card => card.lastReviewed).slice(0, settings.reviewLimit);
-                
-                return [...newCards, ...reviewCards];
-            }
-
-            // Update today's count
-            function updateTodayCount() {
-                todayCards = getTodayCards();
-                document.getElementById('todayCount').textContent = `${todayCards.length} algorithms to practice`;
-            }
-
-            // Update stats
-            function updateStats() {
-                // Calculate mastered and in progress
-                const mastered = cards.filter(card => card.interval > 30).length;
-                const inProgress = cards.length - mastered;
-                
-                stats.mastered = mastered;
-                stats.inProgress = inProgress;
-                
-                // Update today's count in stats
-                const today = new Date().toISOString().split('T')[0];
-                stats.practiced[today] = (stats.practiced[today] || 0) + 1;
-                
-                // Save stats
-                localStorage.setItem('algorithm-stats', JSON.stringify(stats));
-                
-                // Update stats display
-                document.getElementById('totalChallenges').textContent = cards.length;
-                document.getElementById('masteredChallenges').textContent = mastered;
-                document.getElementById('inProgressChallenges').textContent = inProgress;
-                
-                // Update practice chart
-                updatePracticeChart();
-            }
-
-            // Update practice chart
-            function updatePracticeChart() {
-                const chartContainer = document.getElementById('practiceChart');
-                chartContainer.innerHTML = '';
-                
-                // Get last 14 days
-                const days = [];
-                const today = new Date();
-                for (let i = 13; i >= 0; i--) {
-                    const date = new Date(today);
-                    date.setDate(today.getDate() - i);
-                    days.push(date.toISOString().split('T')[0]);
-                }
-                
-                // Create chart bars
-                const maxCount = Math.max(...days.map(day => stats.practiced[day] || 0), 1);
-                
-                days.forEach(day => {
-                    const count = stats.practiced[day] || 0;
-                    const height = Math.max(10, Math.round((count / maxCount) * 100));
-                    const date = new Date(day);
-                    const dayName = date.toLocaleDateString('en-US', { weekday: 'short' }).slice(0, 2);
-                    
-                    const bar = document.createElement('div');
-                    bar.className = 'flex flex-col items-center';
-                    bar.innerHTML = `
-                        <div class="text-xs mb-1">${count}</div>
-                        <div class="w-full bg-blue-500 rounded-t" style="height: ${height}%"></div>
-                        <div class="text-xs mt-1">${dayName}</div>
-                    `;
-                    chartContainer.appendChild(bar);
-                });
-            }
-
-            // Show card
-            function showCard(index) {
-                if (index >= 0 && index < todayCards.length) {
-                    currentCardIndex = index;
-                    const card = todayCards[index];
-                    
-                    // Update UI
-                    document.getElementById('challengeTitle').textContent = card.title;
-                    document.getElementById('challengeDescription').textContent = card.description;
-                    document.getElementById('languageSelect').value = card.language;
-                    
-                    // Clear and set editor mode
-                    editor.setValue('');
-                    editor.session.setMode(`ace/mode/${card.language}`);
-                    
-                    // Update solution code
-                    document.getElementById('solutionCode').className = `language-${card.language}`;
-                    document.getElementById('solutionCode').textContent = card.solution;
-                    hljs.highlightElement(document.getElementById('solutionCode'));
-                    
-                    // Show practice screen
-                    showScreen('practiceScreen');
-                    
-                    // Hide solution and rating screens
-                    document.getElementById('solutionScreen').classList.add('hidden');
-                    document.getElementById('ratingScreen').classList.add('hidden');
-                }
-            }
-
-            // Show screen
-            function showScreen(screenId) {
-                // Hide all screens
-                document.getElementById('welcomeScreen').classList.add('hidden');
-                document.getElementById('practiceScreen').classList.add('hidden');
-                document.getElementById('addCardScreen').classList.add('hidden');
-                document.getElementById('statsScreen').classList.add('hidden');
-                document.getElementById('settingsScreen').classList.add('hidden');
-                
-                // Show the requested screen
-                document.getElementById(screenId).classList.remove('hidden');
-            }
-
-            // Event listeners
-            document.getElementById('startPracticeBtn').addEventListener('click', () => {
-                updateTodayCount();
-                if (todayCards.length > 0) {
-                    showCard(0);
-                } else {
-                    alert('No cards due for today. Try adding some new cards!');
-                }
-            });
-
-            document.getElementById('addNewCardBtn').addEventListener('click', () => {
-                showScreen('addCardScreen');
-                newCardSolutionEditor.setValue('');
-            });
-
-            document.getElementById('statsBtn').addEventListener('click', () => {
-                showScreen('statsScreen');
-                updateStats();
-            });
-
-            document.getElementById('settingsBtn').addEventListener('click', () => {
-                showScreen('settingsScreen');
-                document.getElementById('newCardsLimit').value = settings.newCardsLimit;
-                document.getElementById('reviewLimit').value = settings.reviewLimit;
-                document.getElementById('themeSelect').value = settings.theme;
-            });
-
-            document.getElementById('languageSelect').addEventListener('change', function() {
-                editor.session.setMode(`ace/mode/${this.value}`);
-            });
-
-            document.getElementById('showSolutionBtn').addEventListener('click', () => {
-                document.getElementById('solutionScreen').classList.toggle('hidden');
-            });
-
-            document.getElementById('checkSolutionBtn').addEventListener('click', () => {
-                document.getElementById('ratingScreen').classList.remove('hidden');
-            });
-
-            document.getElementById('backFromStatsBtn').addEventListener('click', () => {
-                showScreen('welcomeScreen');
-            });
-
-            document.getElementById('backFromSettingsBtn').addEventListener('click', () => {
-                // Save settings
-                settings.newCardsLimit = parseInt(document.getElementById('newCardsLimit').value);
-                settings.reviewLimit = parseInt(document.getElementById('reviewLimit').value);
-                settings.theme = document.getElementById('themeSelect').value;
-                localStorage.setItem('algorithm-settings', JSON.stringify(settings));
-                
-                showScreen('welcomeScreen');
-            });
-
-            document.getElementById('cancelAddCardBtn').addEventListener('click', () => {
-                showScreen('welcomeScreen');
-            });
-
-            document.getElementById('saveCardBtn').addEventListener('click', () => {
-                const title = document.getElementById('newCardTitle').value.trim();
-                const description = document.getElementById('newCardDescription').value.trim();
-                const language = document.getElementById('newCardLanguage').value;
-                const solution = newCardSolutionEditor.getValue();
-                
-                if (!title || !description || !solution) {
-                    alert('Please fill in all fields');
-                    return;
-                }
-                
-                // Create new card
-                const newCard = {
-                    id: title.toLowerCase().replace(/\s+/g, '-'),
-                    title,
-                    description,
-                    language,
-                    solution,
-                    interval: 1,
-                    ease: 2.5,
-                    nextReview: new Date().toISOString().split('T')[0],
-                    created: new Date().toISOString()
-                };
-                
-                // Add to cards
-                cards.push(newCard);
-                localStorage.setItem('algorithm-cards', JSON.stringify(cards));
-                
-                // Update today's count
-                updateTodayCount();
-                
-                // Show welcome screen
-                showScreen('welcomeScreen');
-            });
-
-            document.querySelectorAll('.rating-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const rating = parseInt(btn.dataset.rating);
-                    
-                    // Update card
-                    const card = todayCards[currentCardIndex];
-                    card.lastReviewed = new Date().toISOString();
-                    updateCardInterval(card, rating);
-                    
-                    // Save cards
-                    localStorage.setItem('algorithm-cards', JSON.stringify(cards));
-                    
-                    // Update stats
-                    updateStats();
-                    
-                    // Show next card or go back to welcome screen
-                    if (currentCardIndex < todayCards.length - 1) {
-                        showCard(currentCardIndex + 1);
-                    } else {
-                        showScreen('welcomeScreen');
-                        updateTodayCount();
-                    }
-                });
-            });
-
-            // Export data
-            document.getElementById('exportData').addEventListener('click', () => {
-                const data = {
-                    cards,
-                    settings,
-                    stats
-                };
-                
-                const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'algorithm-practice-data.json';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-            });
-
-            // Import data
-            document.getElementById('importData').addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        try {
-                            const data = JSON.parse(event.target.result);
-                            if (data.cards && data.settings && data.stats) {
-                                cards = data.cards;
-                                settings = data.settings;
-                                stats = data.stats;
-                                
-                                localStorage.setItem('algorithm-cards', JSON.stringify(cards));
-                                localStorage.setItem('algorithm-settings', JSON.stringify(settings));
-                                localStorage.setItem('algorithm-stats', JSON.stringify(stats));
-                                
-                                updateTodayCount();
-                                alert('Data imported successfully');
-                            } else {
-                                alert('Invalid data format');
-                            }
-                        } catch (error) {
-                            alert('Error importing data: ' + error.message);
-                        }
-                    };
-                    reader.readAsText(file);
-                }
-            });
-
-            // Run code button
-            document.getElementById('runCodeBtn').addEventListener('click', () => {
-                alert('Code execution is not available in this version. Check your solution against the reference solution.');
-            });
-
-            // Initialize
-            updateTodayCount();
+        loginTab.addEventListener('click', () => {
+            loginTab.classList.add('text-white', 'active-tab');
+            loginTab.classList.remove('text-gray-400');
+            registerTab.classList.add('text-gray-400');
+            registerTab.classList.remove('text-white', 'active-tab');
+            loginForm.classList.remove('hidden');
+            registerForm.classList.add('hidden');
         });
+        
+        registerTab.addEventListener('click', () => {
+            registerTab.classList.add('text-white', 'active-tab');
+            registerTab.classList.remove('text-gray-400');
+            loginTab.classList.add('text-gray-400');
+            loginTab.classList.remove('text-white', 'active-tab');
+            registerForm.classList.remove('hidden');
+            loginForm.classList.add('hidden');
+        });
+        
+        // Toggle password visibility
+        const loginTogglePassword = document.getElementById('login-toggle-password');
+        const loginPassword = document.getElementById('login-password');
+        
+        loginTogglePassword.addEventListener('click', () => {
+            const type = loginPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+            loginPassword.setAttribute('type', type);
+            toggleEyeIcon(loginTogglePassword);
+        });
+        
+        const registerTogglePassword = document.getElementById('register-toggle-password');
+        const registerPassword = document.getElementById('register-password');
+        
+        registerTogglePassword.addEventListener('click', () => {
+            const type = registerPassword.getAttribute('type') === 'password' ? 'text' : 'password';
+            registerPassword.setAttribute('type', type);
+            toggleEyeIcon(registerTogglePassword);
+        });
+        
+        function toggleEyeIcon(button) {
+            const svg = button.querySelector('svg');
+            if (svg.innerHTML.includes('M15 12a3 3 0 11-6 0 3 3 0 016 0z')) {
+                svg.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                `;
+            } else {
+                svg.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                `;
+            }
+        }
+        
+        // Form validation and submission
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Reset errors
+            hideError('login-email-error');
+            hideError('login-password-error');
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            // Validate email
+            if (!validateEmail(email)) {
+                showError('login-email-error', 'Please enter a valid email address');
+                return;
+            }
+            
+            // Check if user exists
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (!user) {
+                showError('login-password-error', 'Invalid email or password');
+                return;
+            }
+            
+            // Login successful
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            
+            // Redirect to dashboard (for now, just show an alert)
+            alert('Login successful! Redirecting to dashboard...');
+            window.location.href = 'dashboard.html';
+        });
+        
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Reset errors
+            hideError('register-username-error');
+            hideError('register-email-error');
+            hideError('register-password-error');
+            hideError('confirm-password-error');
+            
+            const username = document.getElementById('register-username').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            let isValid = true;
+            
+            // Validate username
+            if (username.length < 3) {
+                showError('register-username-error', 'Username must be at least 3 characters');
+                isValid = false;
+            }
+            
+            // Validate email
+            if (!validateEmail(email)) {
+                showError('register-email-error', 'Please enter a valid email address');
+                isValid = false;
+            }
+            
+            // Validate password
+            if (password.length < 6) {
+                showError('register-password-error', 'Password must be at least 6 characters');
+                isValid = false;
+            }
+            
+            // Validate confirm password
+            if (password !== confirmPassword) {
+                showError('confirm-password-error', 'Passwords do not match');
+                isValid = false;
+            }
+            
+            if (!isValid) return;
+            
+            // Check if email already exists
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            if (users.some(u => u.email === email)) {
+                showError('register-email-error', 'Email already in use');
+                return;
+            }
+            
+            // Create new user
+            const newUser = {
+                id: Date.now(),
+                username,
+                email,
+                password,
+                role: 'user'
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // Set as current user
+            localStorage.setItem('currentUser', JSON.stringify(newUser));
+            
+            // Redirect to dashboard (for now, just show an alert)
+            alert('Account created successfully! Redirecting to dashboard...');
+            window.location.href = 'dashboard.html';
+        });
+        
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+        
+        function showError(id, message) {
+            const errorElement = document.getElementById(id);
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+        }
+        
+        function hideError(id) {
+            const errorElement = document.getElementById(id);
+            errorElement.classList.add('hidden');
+        }
     </script>
 </body>
 </html>
