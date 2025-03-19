@@ -47,6 +47,33 @@
                 width: 12px;
                 height: 12px;
                 border-radius: 2px;
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+                position: relative;
+            }
+            .contribution-cell:hover {
+                transform: scale(1.5);
+                box-shadow: 0 0 8px rgba(28, 78, 128, 0.7);
+                z-index: 10;
+            }
+            .contribution-tooltip {
+                position: absolute;
+                bottom: 100%;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: #23282e;
+                color: #d0dae5;
+                padding: 3px 6px;
+                border-radius: 4px;
+                font-size: 10px;
+                white-space: nowrap;
+                pointer-events: none;
+                opacity: 0;
+                transition: opacity 0.2s ease;
+                z-index: 20;
+                border: 1px solid rgba(124, 144, 154, 0.3);
+            }
+            .contribution-cell:hover .contribution-tooltip {
+                opacity: 1;
             }
             .contribution-level-0 {
                 background-color: rgba(28, 78, 128, 0.1);
@@ -124,47 +151,12 @@
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="decks-container">
-                    <!-- Sample Decks -->
-                    <div class="bg-dark/50 rounded-lg p-4 border border-secondary/20 hover:border-primary/50 transition-colors cursor-pointer">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-light font-medium">Sorting Algorithms</h3>
-                            <span class="text-accent text-sm">8 cards</span>
-                        </div>
-                        <p class="text-secondary text-sm mb-3">Classic sorting algorithms implementation and analysis</p>
-                        <div class="flex justify-between text-xs text-secondary">
-                            <span>5 due today</span>
-                            <span>Last practiced: 2 days ago</span>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-dark/50 rounded-lg p-4 border border-secondary/20 hover:border-primary/50 transition-colors cursor-pointer">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-light font-medium">Data Structures</h3>
-                            <span class="text-accent text-sm">12 cards</span>
-                        </div>
-                        <p class="text-secondary text-sm mb-3">Common data structures implementation and usage</p>
-                        <div class="flex justify-between text-xs text-secondary">
-                            <span>3 due today</span>
-                            <span>Last practiced: Today</span>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-dark/50 rounded-lg p-4 border border-secondary/20 hover:border-primary/50 transition-colors cursor-pointer">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-light font-medium">Dynamic Programming</h3>
-                            <span class="text-accent text-sm">6 cards</span>
-                        </div>
-                        <p class="text-secondary text-sm mb-3">DP problems and solutions with explanations</p>
-                        <div class="flex justify-between text-xs text-secondary">
-                            <span>4 due today</span>
-                            <span>Last practiced: 1 day ago</span>
-                        </div>
-                    </div>
+                    <!-- Decks will be populated by JavaScript -->
                 </div>
             </section>
 
             <!-- Progress Section -->
-            <section class="bg-dark-lighter/80 backdrop-blur-sm rounded-xl p-6 border border-secondary/20">
+            <section class="bg-dark-lighter/80 backdrop-blur-sm rounded-xl p-6 border border-secondary/20 relative">
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-2xl font-semibold text-light">Your Progress</h2>
                     <div class="flex gap-2 text-xs text-secondary">
@@ -180,7 +172,7 @@
                 </div>
                 
                 <!-- GitHub-like Contribution Graph -->
-                <div class="overflow-x-auto pb-4">
+                <div class="overflow-x-auto pb-4 overflow-visible">
                     <div class="contribution-graph min-w-max">
                         <div class="flex text-xs text-secondary mb-1 pl-8">
                             <div class="w-12 text-center">Jan</div>
@@ -274,7 +266,7 @@
 
         <!-- Add Card Modal -->
         <div id="add-card-modal" class="fixed inset-0 bg-dark/80 flex items-center justify-center z-50 hidden">
-            <div class="bg-dark-lighter rounded-xl p-6 max-w-3xl w-full mx-4 border border-secondary/20">
+            <div class="bg-dark-lighter rounded-xl p-6 max-w-3xl w-full mx-4 border border-secondary/20 max-h-[90vh] overflow-y-auto">
                 <h3 class="text-xl font-semibold text-light mb-4">Add New Card</h3>
                 <form id="add-card-form">
                     <div class="mb-4">
@@ -285,9 +277,7 @@
                             required
                         >
                             <option value="">Select a deck</option>
-                            <option value="sorting">Sorting Algorithms</option>
-                            <option value="data-structures">Data Structures</option>
-                            <option value="dynamic-programming">Dynamic Programming</option>
+                            <!-- Deck options will be populated by JavaScript -->
                         </select>
                     </div>
                     <div class="mb-4">
@@ -325,7 +315,7 @@
                         <label for="card-solution" class="block text-secondary mb-2">Solution</label>
                         <textarea 
                             id="card-solution" 
-                            class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary h-40 font-mono"
+                            class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary h-32 font-mono"
                             placeholder="// Your solution code here"
                             required
                         ></textarea>
@@ -436,6 +426,291 @@ function merge(left, right) {
                 </div>
             </div>
         </div>
+
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="fixed inset-0 bg-dark/80 flex items-center justify-center z-50 hidden">
+            <div class="bg-dark-lighter rounded-xl p-6 max-w-md w-full mx-4 border border-secondary/20">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-semibold text-light">Settings</h3>
+                    <button id="close-settings" class="text-secondary hover:text-light">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Data Import/Export Section -->
+                <div class="mb-6">
+                    <h4 class="text-light font-medium mb-3">Data Management</h4>
+                    
+                    <!-- Export Data -->
+                    <div class="mb-4">
+                        <p class="text-secondary text-sm mb-2">Export all your decks and cards as a JSON file</p>
+                        <button 
+                            id="export-data-btn" 
+                            class="w-full bg-primary hover:bg-primary-dark text-light font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            Export Data
+                        </button>
+                    </div>
+                    
+                    <!-- Import Data -->
+                    <div>
+                        <p class="text-secondary text-sm mb-2">Import decks and cards from a JSON file</p>
+                        <label 
+                            for="import-data-input" 
+                            class="w-full bg-primary hover:bg-primary-dark text-light font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center cursor-pointer"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                            </svg>
+                            Import Data
+                            <input type="file" id="import-data-input" accept=".json" class="hidden">
+                        </label>
+                        <p id="import-status" class="text-sm mt-2 hidden"></p>
+                    </div>
+                </div>
+                
+                <div class="border-t border-secondary/20 pt-4">
+                    <button 
+                        id="close-settings-btn" 
+                        class="w-full bg-dark hover:bg-dark-lighter text-secondary font-medium py-2 px-4 rounded-lg transition-colors"
+                    >
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deck Details Modal -->
+        <div id="deck-details-modal" class="fixed inset-0 bg-dark/80 flex items-center justify-center z-50 hidden">
+            <div class="bg-dark-lighter rounded-xl p-6 max-w-4xl w-full mx-4 border border-secondary/20 max-h-[90vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-semibold text-light" id="deck-details-title">Deck Details</h3>
+                    <button id="close-deck-details" class="text-secondary hover:text-light">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Deck Info -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-light font-medium">Deck Information</h4>
+                        <div class="flex gap-2">
+                            <button id="edit-deck-btn" class="px-3 py-1 bg-primary hover:bg-primary-dark text-light rounded-lg transition-colors text-sm">
+                                Edit
+                            </button>
+                            <button id="delete-deck-btn" class="px-3 py-1 bg-accent hover:bg-accent-dark text-light rounded-lg transition-colors text-sm">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Deck Edit Form -->
+                    <div id="deck-edit-form" class="hidden mb-4">
+                        <div class="mb-3">
+                            <label for="edit-deck-name" class="block text-secondary mb-1 text-sm">Deck Name</label>
+                            <input 
+                                type="text" 
+                                id="edit-deck-name" 
+                                class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-3 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                            >
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-deck-description" class="block text-secondary mb-1 text-sm">Description</label>
+                            <textarea 
+                                id="edit-deck-description" 
+                                class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-3 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary h-20 text-sm"
+                            ></textarea>
+                        </div>
+                        <div class="flex justify-end gap-2">
+                            <button 
+                                type="button" 
+                                id="cancel-edit-deck" 
+                                class="px-3 py-1 bg-dark hover:bg-dark-lighter text-secondary rounded-lg transition-colors text-sm"
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                type="button" 
+                                id="save-deck-changes" 
+                                class="px-3 py-1 bg-accent hover:bg-accent-dark text-light rounded-lg transition-colors text-sm"
+                            >
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Deck Info Display -->
+                    <div id="deck-info-display" class="bg-dark/50 rounded-lg p-4 border border-secondary/20">
+                        <div class="mb-2">
+                            <span class="text-secondary text-sm">Name:</span>
+                            <span class="text-light ml-2" id="deck-info-name">Sorting Algorithms</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="text-secondary text-sm">Description:</span>
+                            <p class="text-light mt-1" id="deck-info-description">Classic sorting algorithms implementation and analysis</p>
+                        </div>
+                        <div class="flex justify-between text-xs text-secondary">
+                            <span><span id="deck-info-cards-count">8</span> cards</span>
+                            <span>Created: <span id="deck-info-created">Jan 15, 2023</span></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Deck Cards -->
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-light font-medium">Cards in this Deck</h4>
+                        <button id="add-card-to-deck-btn" class="px-3 py-1 bg-accent hover:bg-accent-dark text-light rounded-lg transition-colors text-sm flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            Add Card
+                        </button>
+                    </div>
+                    
+                    <div id="deck-cards-container" class="space-y-3">
+                        <!-- Cards will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="flex justify-end mt-6">
+                    <button 
+                        type="button" 
+                        id="close-deck-details-btn" 
+                        class="px-4 py-2 bg-dark hover:bg-dark-lighter text-secondary rounded-lg transition-colors"
+                    >
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Browse All Cards Modal -->
+        <div id="browse-cards-modal" class="fixed inset-0 bg-dark/80 flex items-center justify-center z-50 hidden">
+            <div class="bg-dark-lighter rounded-xl p-6 max-w-5xl w-full mx-4 border border-secondary/20 max-h-[90vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-semibold text-light">All Cards</h3>
+                    <button id="close-browse-cards" class="text-secondary hover:text-light">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Search and Filter -->
+                <div class="mb-6 flex flex-wrap gap-3">
+                    <div class="flex-1 min-w-[200px]">
+                        <input 
+                            type="text" 
+                            id="search-cards" 
+                            placeholder="Search cards..." 
+                            class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary"
+                        >
+                    </div>
+                    <select 
+                        id="filter-deck" 
+                        class="bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary"
+                    >
+                        <option value="">All Decks</option>
+                        <!-- Deck options will be populated by JavaScript -->
+                    </select>
+                </div>
+                
+                <!-- Cards List -->
+                <div id="all-cards-container" class="space-y-4">
+                    <!-- Cards will be populated by JavaScript -->
+                </div>
+                
+                <div class="flex justify-end mt-6">
+                    <button 
+                        type="button" 
+                        id="close-browse-cards-btn" 
+                        class="px-4 py-2 bg-dark hover:bg-dark-lighter text-secondary rounded-lg transition-colors"
+                    >
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Card Modal -->
+        <div id="edit-card-modal" class="fixed inset-0 bg-dark/80 flex items-center justify-center z-50 hidden">
+            <div class="bg-dark-lighter rounded-xl p-6 max-w-3xl w-full mx-4 border border-secondary/20 max-h-[90vh] overflow-y-auto">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold text-light">Edit Card</h3>
+                    <button id="close-edit-card" class="text-secondary hover:text-light">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <form id="edit-card-form">
+                    <input type="hidden" id="edit-card-id">
+                    <input type="hidden" id="edit-card-deck-id">
+                    
+                    <div class="mb-4">
+                        <label for="edit-card-title" class="block text-secondary mb-2">Title</label>
+                        <input 
+                            type="text" 
+                            id="edit-card-title" 
+                            class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary"
+                            required
+                        >
+                    </div>
+                    <div class="mb-4">
+                        <label for="edit-card-question" class="block text-secondary mb-2">Question/Problem</label>
+                        <textarea 
+                            id="edit-card-question" 
+                            class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary h-24"
+                            required
+                        ></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label for="edit-card-language" class="block text-secondary mb-2">Language</label>
+                        <select 
+                            id="edit-card-language" 
+                            class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary"
+                        >
+                            <option value="javascript">JavaScript</option>
+                            <option value="python">Python</option>
+                            <option value="java">Java</option>
+                            <option value="cpp">C++</option>
+                        </select>
+                    </div>
+                    <div class="mb-6">
+                        <label for="edit-card-solution" class="block text-secondary mb-2">Solution</label>
+                        <textarea 
+                            id="edit-card-solution" 
+                            class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary h-32 font-mono"
+                            required
+                        ></textarea>
+                    </div>
+                    <div class="flex justify-end gap-3">
+                        <button 
+                            type="button" 
+                            id="cancel-edit-card-btn" 
+                            class="px-4 py-2 bg-dark hover:bg-dark-lighter text-secondary rounded-lg transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            type="submit" 
+                            class="px-4 py-2 bg-accent hover:bg-accent-dark text-light rounded-lg transition-colors"
+                        >
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -469,6 +744,15 @@ function merge(left, right) {
             
             // Initialize decks and cards from localStorage
             initializeData();
+            
+            // Settings functionality
+            setupSettings();
+            
+            // Browse cards functionality
+            setupBrowseCards();
+            
+            // Deck details functionality
+            setupDeckDetails();
         });
         
         function generateContributionGraph() {
@@ -500,18 +784,32 @@ function merge(left, right) {
                     const date = new Date();
                     date.setDate(today.getDate() - (daysInYear - (week * 7 + day)));
                     const dateString = date.toISOString().split('T')[0];
+                    const formattedDate = formatDate(date);
                     
                     const level = contributionData[dateString] || 0;
+                    const problemsCount = level === 0 ? 0 : Math.floor(Math.random() * 10) + 1;
                     
                     const dayCell = document.createElement('div');
                     dayCell.className = `contribution-cell contribution-level-${level}`;
-                    dayCell.title = `${dateString}: ${level} contributions`;
+                    
+                    // Add tooltip with problems solved count and date
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'contribution-tooltip';
+                    tooltip.textContent = `${problemsCount} problems solved on ${formattedDate}`;
+                    dayCell.appendChild(tooltip);
                     
                     weekColumn.appendChild(dayCell);
                 }
                 
                 graphContainer.appendChild(weekColumn);
             }
+        }
+        
+        function formatDate(date) {
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const day = date.getDate();
+            const month = months[date.getMonth()];
+            return `${month} ${day}`;
         }
         
         function setupModals() {
@@ -538,7 +836,7 @@ function merge(left, right) {
                 // Save deck to localStorage
                 const decks = JSON.parse(localStorage.getItem('decks') || '[]');
                 const newDeck = {
-                    id: Date.now(),
+                    id: Date.now().toString(),
                     name: deckName,
                     description: deckDescription,
                     cards: [],
@@ -554,6 +852,9 @@ function merge(left, right) {
                 
                 // Refresh decks display
                 displayDecks();
+                
+                // Update deck dropdown in add card modal
+                updateDeckDropdown();
             });
             
             // Add Card Modal
@@ -573,6 +874,8 @@ function merge(left, right) {
             const addCardForm = document.getElementById('add-card-form');
             
             addCardBtn.addEventListener('click', () => {
+                // Update deck dropdown before showing modal
+                updateDeckDropdown();
                 addCardModal.classList.remove('hidden');
             });
             
@@ -595,7 +898,7 @@ function merge(left, right) {
                 
                 if (deckIndex !== -1) {
                     const newCard = {
-                        id: Date.now(),
+                        id: Date.now().toString(),
                         title,
                         question,
                         language,
@@ -616,6 +919,9 @@ function merge(left, right) {
                 
                 // Update due cards count
                 updateDueCardsCount();
+                
+                // Refresh decks display
+                displayDecks();
             });
             
             // Practice Modal
@@ -658,6 +964,390 @@ function merge(left, right) {
             });
         }
         
+        function setupDeckDetails() {
+            const deckDetailsModal = document.getElementById('deck-details-modal');
+            const closeDeckDetails = document.getElementById('close-deck-details');
+            const closeDeckDetailsBtn = document.getElementById('close-deck-details-btn');
+            const editDeckBtn = document.getElementById('edit-deck-btn');
+            const deleteDeckBtn = document.getElementById('delete-deck-btn');
+            const deckEditForm = document.getElementById('deck-edit-form');
+            const deckInfoDisplay = document.getElementById('deck-info-display');
+            const cancelEditDeck = document.getElementById('cancel-edit-deck');
+            const saveDeckChanges = document.getElementById('save-deck-changes');
+            const addCardToDeckBtn = document.getElementById('add-card-to-deck-btn');
+            
+            // Close deck details modal
+            closeDeckDetails.addEventListener('click', () => {
+                deckDetailsModal.classList.add('hidden');
+            });
+            
+            closeDeckDetailsBtn.addEventListener('click', () => {
+                deckDetailsModal.classList.add('hidden');
+            });
+            
+            // Edit deck
+            editDeckBtn.addEventListener('click', () => {
+                deckInfoDisplay.classList.add('hidden');
+                deckEditForm.classList.remove('hidden');
+                
+                // Populate form with current deck data
+                const deckId = deckDetailsModal.dataset.deckId;
+                const decks = JSON.parse(localStorage.getItem('decks') || '[]');
+                const deck = decks.find(d => d.id === deckId);
+                
+                if (deck) {
+                    document.getElementById('edit-deck-name').value = deck.name;
+                    document.getElementById('edit-deck-description').value = deck.description;
+                }
+            });
+            
+            // Cancel edit
+            cancelEditDeck.addEventListener('click', () => {
+                deckEditForm.classList.add('hidden');
+                deckInfoDisplay.classList.remove('hidden');
+            });
+            
+            // Save deck changes
+            saveDeckChanges.addEventListener('click', () => {
+                const deckId = deckDetailsModal.dataset.deckId;
+                const newName = document.getElementById('edit-deck-name').value;
+                const newDescription = document.getElementById('edit-deck-description').value;
+                
+                const decks = JSON.parse(localStorage.getItem('decks') || '[]');
+                const deckIndex = decks.findIndex(d => d.id === deckId);
+                
+                if (deckIndex !== -1) {
+                    decks[deckIndex].name = newName;
+                    decks[deckIndex].description = newDescription;
+                    localStorage.setItem('decks', JSON.stringify(decks));
+                    
+                    // Update deck info display
+                    document.getElementById('deck-info-name').textContent = newName;
+                    document.getElementById('deck-info-description').textContent = newDescription;
+                    document.getElementById('deck-details-title').textContent = newName;
+                    
+                    // Hide edit form, show info display
+                    deckEditForm.classList.add('hidden');
+                    deckInfoDisplay.classList.remove('hidden');
+                    
+                    // Refresh decks display
+                    displayDecks();
+                    
+                    // Update deck dropdowns
+                    updateDeckDropdown();
+                }
+            });
+            
+            // Delete deck
+            deleteDeckBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to delete this deck? This action cannot be undone.')) {
+                    const deckId = deckDetailsModal.dataset.deckId;
+                    const decks = JSON.parse(localStorage.getItem('decks') || '[]');
+                    const updatedDecks = decks.filter(d => d.id !== deckId);
+                    
+                    localStorage.setItem('decks', JSON.stringify(updatedDecks));
+                    
+                    // Close modal
+                    deckDetailsModal.classList.add('hidden');
+                    
+                    // Refresh decks display
+                    displayDecks();
+                    
+                    // Update deck dropdowns
+                    updateDeckDropdown();
+                    
+                    // Update due cards count
+                    updateDueCardsCount();
+                }
+            });
+            
+            // Add card to deck
+            addCardToDeckBtn.addEventListener('click', () => {
+                const deckId = deckDetailsModal.dataset.deckId;
+                const addCardModal = document.getElementById('add-card-modal');
+                const cardDeckSelect = document.getElementById('card-deck');
+                
+                // Set the deck in the dropdown
+                updateDeckDropdown();
+                cardDeckSelect.value = deckId;
+                
+                // Show add card modal
+                deckDetailsModal.classList.add('hidden');
+                addCardModal.classList.remove('hidden');
+            });
+        }
+        
+        function setupBrowseCards() {
+            const browseCardsBtn = document.getElementById('browse-cards-btn');
+            const browseCardsModal = document.getElementById('browse-cards-modal');
+            const closeBrowseCards = document.getElementById('close-browse-cards');
+            const closeBrowseCardsBtn = document.getElementById('close-browse-cards-btn');
+            const searchCards = document.getElementById('search-cards');
+            const filterDeck = document.getElementById('filter-deck');
+            
+            // Open browse cards modal
+            browseCardsBtn.addEventListener('click', () => {
+                // Update deck filter dropdown
+                updateBrowseCardsDeckFilter();
+                
+                // Load all cards
+                loadAllCards();
+                
+                // Show modal
+                browseCardsModal.classList.remove('hidden');
+            });
+            
+            // Close browse cards modal
+            closeBrowseCards.addEventListener('click', () => {
+                browseCardsModal.classList.add('hidden');
+            });
+            
+            closeBrowseCardsBtn.addEventListener('click', () => {
+                browseCardsModal.classList.add('hidden');
+            });
+            
+            // Search and filter functionality
+            searchCards.addEventListener('input', () => {
+                loadAllCards();
+            });
+            
+            filterDeck.addEventListener('change', () => {
+                loadAllCards();
+            });
+        }
+        
+        function updateBrowseCardsDeckFilter() {
+            const filterDeck = document.getElementById('filter-deck');
+            const decks = JSON.parse(localStorage.getItem('decks') || '[]');
+            
+            // Clear existing options except the first one
+            filterDeck.innerHTML = '<option value="">All Decks</option>';
+            
+            // Add options for each deck
+            decks.forEach(deck => {
+                const option = document.createElement('option');
+                option.value = deck.id;
+                option.textContent = deck.name;
+                filterDeck.appendChild(option);
+            });
+        }
+        
+        function loadAllCards() {
+            const allCardsContainer = document.getElementById('all-cards-container');
+            const searchQuery = document.getElementById('search-cards').value.toLowerCase();
+            const deckFilter = document.getElementById('filter-deck').value;
+            
+            // Clear container
+            allCardsContainer.innerHTML = '';
+            
+            // Get all decks
+            const decks = JSON.parse(localStorage.getItem('decks') || '[]');
+            
+            // Filter decks if needed
+            const filteredDecks = deckFilter ? decks.filter(d => d.id === deckFilter) : decks;
+            
+            // Collect all cards from filtered decks
+            let allCards = [];
+            filteredDecks.forEach(deck => {
+                deck.cards.forEach(card => {
+                    allCards.push({
+                        ...card,
+                        deckId: deck.id,
+                        deckName: deck.name
+                    });
+                });
+            });
+            
+            // Filter cards by search query
+            if (searchQuery) {
+                allCards = allCards.filter(card => 
+                    card.title.toLowerCase().includes(searchQuery) || 
+                    card.question.toLowerCase().includes(searchQuery) ||
+                    card.solution.toLowerCase().includes(searchQuery)
+                );
+            }
+            
+            // Display cards
+            if (allCards.length === 0) {
+                allCardsContainer.innerHTML = `
+                    <div class="text-center text-secondary py-8">
+                        No cards found. Try adjusting your search or filter.
+                    </div>
+                `;
+                return;
+            }
+            
+            allCards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'bg-dark/50 rounded-lg p-4 border border-secondary/20';
+                cardElement.innerHTML = `
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h3 class="text-light font-medium">${card.title}</h3>
+                            <p class="text-secondary text-xs mt-1">Deck: ${card.deckName}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="edit-card-btn px-2 py-1 bg-primary hover:bg-primary-dark text-light rounded-lg transition-colors text-xs" data-card-id="${card.id}" data-deck-id="${card.deckId}">
+                                Edit
+                            </button>
+                            <button class="delete-card-btn px-2 py-1 bg-accent hover:bg-accent-dark text-light rounded-lg transition-colors text-xs" data-card-id="${card.id}" data-deck-id="${card.deckId}">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="text-secondary text-xs mb-1">Question:</div>
+                        <p class="text-light text-sm">${card.question}</p>
+                    </div>
+                    <div>
+                        <div class="text-secondary text-xs mb-1">Solution (${card.language}):</div>
+                        <div class="bg-dark/70 rounded p-2 text-light text-xs font-mono overflow-x-auto whitespace-pre-wrap max-h-32 overflow-y-auto">${card.solution}</div>
+                    </div>
+                `;
+                
+                allCardsContainer.appendChild(cardElement);
+            });
+            
+            // Add event listeners to edit and delete buttons
+            document.querySelectorAll('.edit-card-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const cardId = btn.dataset.cardId;
+                    const deckId = btn.dataset.deckId;
+                    openEditCardModal(cardId, deckId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-card-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const cardId = btn.dataset.cardId;
+                    const deckId = btn.dataset.deckId;
+                    deleteCard(cardId, deckId);
+                });
+            });
+        }
+        
+        function openEditCardModal(cardId, deckId) {
+            const editCardModal = document.getElementById('edit-card-modal');
+            const editCardForm = document.getElementById('edit-card-form');
+            const cancelEditCardBtn = document.getElementById('cancel-edit-card-btn');
+            const closeEditCard = document.getElementById('close-edit-card');
+            
+            // Find the card
+            const decks = JSON.parse(localStorage.getItem('decks') || '[]');
+            const deck = decks.find(d => d.id === deckId);
+            
+            if (!deck) return;
+            
+            const card = deck.cards.find(c => c.id === cardId);
+            
+            if (!card) return;
+            
+            // Populate form
+            document.getElementById('edit-card-id').value = cardId;
+            document.getElementById('edit-card-deck-id').value = deckId;
+            document.getElementById('edit-card-title').value = card.title;
+            document.getElementById('edit-card-question').value = card.question;
+            document.getElementById('edit-card-language').value = card.language;
+            document.getElementById('edit-card-solution').value = card.solution;
+            
+            // Show modal
+            editCardModal.classList.remove('hidden');
+            
+            // Close modal
+            closeEditCard.addEventListener('click', () => {
+                editCardModal.classList.add('hidden');
+            });
+            
+            cancelEditCardBtn.addEventListener('click', () => {
+                editCardModal.classList.add('hidden');
+            });
+            
+            // Save changes
+            editCardForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const cardId = document.getElementById('edit-card-id').value;
+                const deckId = document.getElementById('edit-card-deck-id').value;
+                const title = document.getElementById('edit-card-title').value;
+                const question = document.getElementById('edit-card-question').value;
+                const language = document.getElementById('edit-card-language').value;
+                const solution = document.getElementById('edit-card-solution').value;
+                
+                // Update card
+                const decks = JSON.parse(localStorage.getItem('decks') || '[]');
+                const deckIndex = decks.findIndex(d => d.id === deckId);
+                
+                if (deckIndex !== -1) {
+                    const cardIndex = decks[deckIndex].cards.findIndex(c => c.id === cardId);
+                    
+                    if (cardIndex !== -1) {
+                        decks[deckIndex].cards[cardIndex].title = title;
+                        decks[deckIndex].cards[cardIndex].question = question;
+                        decks[deckIndex].cards[cardIndex].language = language;
+                        decks[deckIndex].cards[cardIndex].solution = solution;
+                        
+                        localStorage.setItem('decks', JSON.stringify(decks));
+                        
+                        // Close modal
+                        editCardModal.classList.add('hidden');
+                        
+                        // Refresh cards display if in deck details modal
+                        if (!document.getElementById('deck-details-modal').classList.contains('hidden')) {
+                            loadDeckCards(deckId);
+                        }
+                        
+                        // Refresh all cards if in browse cards modal
+                        if (!document.getElementById('browse-cards-modal').classList.contains('hidden')) {
+                            loadAllCards();
+                        }
+                    }
+                }
+            });
+        }
+        
+        function deleteCard(cardId, deckId) {
+            if (confirm('Are you sure you want to delete this card? This action cannot be undone.')) {
+                const decks = JSON.parse(localStorage.getItem('decks') || '[]');
+                const deckIndex = decks.findIndex(d => d.id === deckId);
+                
+                if (deckIndex !== -1) {
+                    // Remove card from deck
+                    decks[deckIndex].cards = decks[deckIndex].cards.filter(c => c.id !== cardId);
+                    
+                    localStorage.setItem('decks', JSON.stringify(decks));
+                    
+                    // Refresh cards display if in deck details modal
+                    if (!document.getElementById('deck-details-modal').classList.contains('hidden')) {
+                        loadDeckCards(deckId);
+                    }
+                    
+                    // Refresh all cards if in browse cards modal
+                    if (!document.getElementById('browse-cards-modal').classList.contains('hidden')) {
+                        loadAllCards();
+                    }
+                    
+                    // Update due cards count
+                    updateDueCardsCount();
+                }
+            }
+        }
+        
+        function updateDeckDropdown() {
+            const deckDropdown = document.getElementById('card-deck');
+            const decks = JSON.parse(localStorage.getItem('decks') || '[]');
+            
+            // Clear existing options
+            deckDropdown.innerHTML = '<option value="">Select a deck</option>';
+            
+            // Add options for each deck
+            decks.forEach(deck => {
+                const option = document.createElement('option');
+                option.value = deck.id;
+                option.textContent = deck.name;
+                deckDropdown.appendChild(option);
+            });
+        }
+        
         function setupPractice() {
             const startPracticeBtn = document.getElementById('start-practice-btn');
             const practiceModal = document.getElementById('practice-modal');
@@ -666,6 +1356,104 @@ function merge(left, right) {
                 practiceModal.classList.remove('hidden');
                 // Load first due card
                 // This would be implemented with actual card data
+            });
+        }
+        
+        function setupSettings() {
+            const settingsBtn = document.getElementById('settings-btn');
+            const settingsModal = document.getElementById('settings-modal');
+            const closeSettingsBtn = document.getElementById('close-settings-btn');
+            const closeSettingsX = document.getElementById('close-settings');
+            const exportDataBtn = document.getElementById('export-data-btn');
+            const importDataInput = document.getElementById('import-data-input');
+            const importStatus = document.getElementById('import-status');
+            
+            // Open settings modal
+            settingsBtn.addEventListener('click', () => {
+                settingsModal.classList.remove('hidden');
+            });
+            
+            // Close settings modal
+            closeSettingsBtn.addEventListener('click', () => {
+                settingsModal.classList.add('hidden');
+            });
+            
+            closeSettingsX.addEventListener('click', () => {
+                settingsModal.classList.add('hidden');
+            });
+            
+            // Export data
+            exportDataBtn.addEventListener('click', () => {
+                const userData = {
+                    decks: JSON.parse(localStorage.getItem('decks') || '[]'),
+                    stats: {
+                        lastExport: new Date().toISOString()
+                    }
+                };
+                
+                const dataStr = JSON.stringify(userData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const dataUrl = URL.createObjectURL(dataBlob);
+                
+                const downloadLink = document.createElement('a');
+                downloadLink.href = dataUrl;
+                downloadLink.download = `recode_data_${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            });
+            
+            // Import data
+            importDataInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                
+                reader.onload = (event) => {
+                    try {
+                        const importedData = JSON.parse(event.target.result);
+                        
+                        // Validate imported data
+                        if (!importedData.decks || !Array.isArray(importedData.decks)) {
+                            throw new Error('Invalid data format');
+                        }
+                        
+                        // Save imported data
+                        localStorage.setItem('decks', JSON.stringify(importedData.decks));
+                        
+                        // Show success message
+                        importStatus.textContent = 'Data imported successfully!';
+                        importStatus.className = 'text-green-500 text-sm mt-2';
+                        importStatus.classList.remove('hidden');
+                        
+                        // Refresh UI
+                        displayDecks();
+                        updateDueCardsCount();
+                        updateDeckDropdown();
+                        
+                        // Hide message after 3 seconds
+                        setTimeout(() => {
+                            importStatus.classList.add('hidden');
+                        }, 3000);
+                        
+                    } catch (error) {
+                        // Show error message
+                        importStatus.textContent = 'Error importing data: Invalid format';
+                        importStatus.className = 'text-accent text-sm mt-2';
+                        importStatus.classList.remove('hidden');
+                        
+                        // Hide message after 3 seconds
+                        setTimeout(() => {
+                            importStatus.classList.add('hidden');
+                        }, 3000);
+                    }
+                    
+                    // Reset file input
+                    importDataInput.value = '';
+                };
+                
+                reader.readAsText(file);
             });
         }
         
@@ -679,7 +1467,7 @@ function merge(left, right) {
                         description: 'Classic sorting algorithms implementation and analysis',
                         cards: [
                             {
-                                id: 1,
+                                id: '1',
                                 title: 'Merge Sort',
                                 question: 'Implement the merge sort algorithm that sorts an array of integers in ascending order.',
                                 language: 'javascript',
@@ -729,6 +1517,9 @@ function merge(left, right) {
             
             // Update due cards count
             updateDueCardsCount();
+            
+            // Initialize deck dropdown
+            updateDeckDropdown();
         }
         
         function displayDecks() {
@@ -742,6 +1533,7 @@ function merge(left, right) {
             decks.forEach(deck => {
                 const deckElement = document.createElement('div');
                 deckElement.className = 'bg-dark/50 rounded-lg p-4 border border-secondary/20 hover:border-primary/50 transition-colors cursor-pointer';
+                deckElement.dataset.deckId = deck.id;
                 
                 const dueCards = deck.cards.filter(card => {
                     const today = new Date().toISOString().split('T')[0];
@@ -768,7 +1560,99 @@ function merge(left, right) {
                     </div>
                 `;
                 
+                // Add click event to open deck details
+                deckElement.addEventListener('click', () => {
+                    openDeckDetails(deck.id);
+                });
+                
                 decksContainer.appendChild(deckElement);
+            });
+        }
+        
+        function openDeckDetails(deckId) {
+            const deckDetailsModal = document.getElementById('deck-details-modal');
+            const decks = JSON.parse(localStorage.getItem('decks') || '[]');
+            const deck = decks.find(d => d.id === deckId);
+            
+            if (!deck) return;
+            
+            // Set deck ID in modal
+            deckDetailsModal.dataset.deckId = deckId;
+            
+            // Update deck info
+            document.getElementById('deck-details-title').textContent = deck.name;
+            document.getElementById('deck-info-name').textContent = deck.name;
+            document.getElementById('deck-info-description').textContent = deck.description;
+            document.getElementById('deck-info-cards-count').textContent = deck.cards.length;
+            document.getElementById('deck-info-created').textContent = formatDate(new Date(deck.created));
+            
+            // Load deck cards
+            loadDeckCards(deckId);
+            
+            // Show modal
+            deckDetailsModal.classList.remove('hidden');
+        }
+        
+        function loadDeckCards(deckId) {
+            const deckCardsContainer = document.getElementById('deck-cards-container');
+            const decks = JSON.parse(localStorage.getItem('decks') || '[]');
+            const deck = decks.find(d => d.id === deckId);
+            
+            if (!deck) return;
+            
+            // Clear container
+            deckCardsContainer.innerHTML = '';
+            
+            // Display cards
+            if (deck.cards.length === 0) {
+                deckCardsContainer.innerHTML = `
+                    <div class="text-center text-secondary py-8">
+                        No cards in this deck yet. Click "Add Card" to create your first card.
+                    </div>
+                `;
+                return;
+            }
+            
+            deck.cards.forEach(card => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'bg-dark/50 rounded-lg p-3 border border-secondary/20';
+                cardElement.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-light font-medium text-sm">${card.title}</h3>
+                        <div class="flex gap-2">
+                            <button class="edit-card-btn px-2 py-0.5 bg-primary hover:bg-primary-dark text-light rounded-lg transition-colors text-xs" data-card-id="${card.id}">
+                                Edit
+                            </button>
+                            <button class="delete-card-btn px-2 py-0.5 bg-accent hover:bg-accent-dark text-light rounded-lg transition-colors text-xs" data-card-id="${card.id}">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="text-secondary text-xs mb-1">Question:</div>
+                        <p class="text-light text-xs">${card.question}</p>
+                    </div>
+                    <div class="text-xs text-secondary">Language: ${card.language}</div>
+                `;
+                
+                deckCardsContainer.appendChild(cardElement);
+            });
+            
+            // Add event listeners to edit and delete buttons
+            document.querySelectorAll('.edit-card-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const cardId = btn.dataset.cardId;
+                    openEditCardModal(cardId, deckId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-card-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const cardId = btn.dataset.cardId;
+                    deleteCard(cardId, deckId);
+                });
             });
         }
         
