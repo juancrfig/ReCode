@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReCode - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="src/css/styles.css">
     <script>
         tailwind.config = {
             theme: {
@@ -157,376 +158,98 @@
         }
     </style>
 </head>
-<body class="min-h-screen bg-dark bg-grid flex items-center justify-center p-4">
-    <!-- Grid Animation Container -->
-    <div class="grid-container">
-        <div class="grid-overlay" id="grid-overlay"></div>
-        <div class="wave" id="wave"></div>
-    </div>
-
-    <div class="w-full max-w-md">
-        <!-- Logo and Title -->
+<body class="min-h-screen bg-dark bg-grid flex items-center justify-center">
+    <div class="container max-w-md mx-auto px-4">
+        <!-- Logo -->
         <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-light text-shadow mb-2">Re<span class="text-accent">Code</span></h1>
-            <p class="text-secondary">Master coding algorithms with spaced repetition</p>
+            <h1 class="text-4xl font-bold text-light text-shadow">Re<span class="text-accent">Code</span></h1>
+            <p class="text-secondary mt-2">Your Personal Coding Practice Assistant</p>
         </div>
-        
-        <!-- Card Container -->
-        <div class="bg-dark-lighter/80 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-secondary/20">
+
+        <!-- Auth Card -->
+        <div class="card">
             <!-- Tabs -->
-            <div class="flex border-b border-secondary/20" id="tabs">
-                <button class="flex-1 py-4 text-light font-medium text-center active-tab" id="login-tab">Login</button>
-                <button class="flex-1 py-4 text-secondary font-medium text-center" id="register-tab">Register</button>
+            <div class="flex border-b border-secondary/20 mb-6">
+                <button 
+                    class="flex-1 py-3 text-light text-center hover:text-accent transition-colors active-tab"
+                    data-tab="login"
+                >
+                    Login
+                </button>
+                <button 
+                    class="flex-1 py-3 text-light text-center hover:text-accent transition-colors"
+                    data-tab="signup"
+                >
+                    Sign Up
+                </button>
             </div>
-            
+
             <!-- Login Form -->
-            <div id="login-form" class="p-6">
-                <form id="loginForm">
-                    <div class="mb-4">
-                        <label for="login-email" class="block text-secondary mb-2">Email</label>
-                        <input 
-                            type="email" 
-                            id="login-email" 
-                            class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary"
-                            placeholder="Enter your email"
-                            required
-                        >
-                        <p class="text-accent text-sm mt-1 hidden" id="login-email-error"></p>
-                    </div>
-                    
-                    <div class="mb-6">
-                        <label for="login-password" class="block text-secondary mb-2">Password</label>
-                        <div class="relative">
-                            <input 
-                                type="password" 
-                                id="login-password" 
-                                class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary"
-                                placeholder="Enter your password"
-                                required
-                            >
-                            <button 
-                                type="button"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 text-secondary hover:text-light"
-                                id="login-toggle-password"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-                            </button>
-                        </div>
-                        <p class="text-accent text-sm mt-1 hidden" id="login-password-error"></p>
-                    </div>
-                    
-                    <button 
-                        type="submit" 
-                        class="w-full bg-accent hover:bg-accent-dark text-light font-medium py-2 px-4 rounded-lg transition-all duration-300 hover:shadow-neon"
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="login-email" class="block text-secondary mb-2">Email</label>
+                    <input 
+                        type="email" 
+                        id="login-email" 
+                        class="form-input"
+                        placeholder="your@email.com"
+                        required
                     >
-                        Sign In
-                    </button>
-                </form>
-            </div>
-            
-            <!-- Register Form -->
-            <div id="register-form" class="p-6 hidden">
-                <form id="registerFormElement">
-                    <div class="mb-4">
-                        <label for="register-username" class="block text-secondary mb-2">Username</label>
-                        <input 
-                            type="text" 
-                            id="register-username" 
-                            class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary"
-                            placeholder="Choose a username"
-                            required
-                        >
-                        <p class="text-accent text-sm mt-1 hidden" id="register-username-error"></p>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label for="register-email" class="block text-secondary mb-2">Email</label>
-                        <input 
-                            type="email" 
-                            id="register-email" 
-                            class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary"
-                            placeholder="Enter your email"
-                            required
-                        >
-                        <p class="text-accent text-sm mt-1 hidden" id="register-email-error"></p>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label for="register-password" class="block text-secondary mb-2">Password</label>
-                        <div class="relative">
-                            <input 
-                                type="password" 
-                                id="register-password" 
-                                class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary"
-                                placeholder="Create a password"
-                                required
-                            >
-                            <button 
-                                type="button"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 text-secondary hover:text-light"
-                                id="register-toggle-password"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                </svg>
-                            </button>
-                        </div>
-                        <p class="text-accent text-sm mt-1 hidden" id="register-password-error"></p>
-                    </div>
-                    
-                    <div class="mb-6">
-                        <label for="confirm-password" class="block text-secondary mb-2">Confirm Password</label>
-                        <input 
-                            type="password" 
-                            id="confirm-password" 
-                            class="w-full bg-dark/50 border border-secondary/30 rounded-lg px-4 py-2 text-light focus:outline-none focus:ring-2 focus:ring-primary"
-                            placeholder="Confirm your password"
-                            required
-                        >
-                        <p class="text-accent text-sm mt-1 hidden" id="confirm-password-error"></p>
-                    </div>
-                    
-                    <button 
-                        type="submit" 
-                        class="w-full bg-accent hover:bg-accent-dark text-light font-medium py-2 px-4 rounded-lg transition-all duration-300 hover:shadow-neon"
+                </div>
+                <div>
+                    <label for="login-password" class="block text-secondary mb-2">Password</label>
+                    <input 
+                        type="password" 
+                        id="login-password" 
+                        class="form-input"
+                        placeholder="••••••••"
+                        required
                     >
-                        Create Account
-                    </button>
-                </form>
-            </div>
-        </div>
-        
-        <!-- Footer -->
-        <div class="mt-6 text-center text-secondary text-sm">
-            <p>© <span id="current-year"></span> ReCode. All rights reserved.</p>
+                </div>
+                <button type="submit" class="btn btn-accent w-full">
+                    Login
+                </button>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signup-form" class="space-y-4 hidden">
+                <div>
+                    <label for="signup-name" class="block text-secondary mb-2">Name</label>
+                    <input 
+                        type="text" 
+                        id="signup-name" 
+                        class="form-input"
+                        placeholder="John Doe"
+                        required
+                    >
+                </div>
+                <div>
+                    <label for="signup-email" class="block text-secondary mb-2">Email</label>
+                    <input 
+                        type="email" 
+                        id="signup-email" 
+                        class="form-input"
+                        placeholder="your@email.com"
+                        required
+                    >
+                </div>
+                <div>
+                    <label for="signup-password" class="block text-secondary mb-2">Password</label>
+                    <input 
+                        type="password" 
+                        id="signup-password" 
+                        class="form-input"
+                        placeholder="••••••••"
+                        required
+                    >
+                </div>
+                <button type="submit" class="btn btn-accent w-full">
+                    Create Account
+                </button>
+            </form>
         </div>
     </div>
 
-    <script>
-        // Set current year in footer
-        document.getElementById('current-year').textContent = new Date().getFullYear();
-        
-        // Tab switching
-        const loginTab = document.getElementById('login-tab');
-        const registerTab = document.getElementById('register-tab');
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-        
-        loginTab.addEventListener('click', () => {
-            loginTab.classList.add('text-light', 'active-tab');
-            loginTab.classList.remove('text-secondary');
-            registerTab.classList.add('text-secondary');
-            registerTab.classList.remove('text-light', 'active-tab');
-            loginForm.classList.remove('hidden');
-            registerForm.classList.add('hidden');
-        });
-        
-        registerTab.addEventListener('click', () => {
-            registerTab.classList.add('text-light', 'active-tab');
-            registerTab.classList.remove('text-secondary');
-            loginTab.classList.add('text-secondary');
-            loginTab.classList.remove('text-light', 'active-tab');
-            registerForm.classList.remove('hidden');
-            loginForm.classList.add('hidden');
-        });
-        
-        // Toggle password visibility
-        const loginTogglePassword = document.getElementById('login-toggle-password');
-        const loginPassword = document.getElementById('login-password');
-        
-        loginTogglePassword.addEventListener('click', () => {
-            const type = loginPassword.getAttribute('type') === 'password' ? 'text' : 'password';
-            loginPassword.setAttribute('type', type);
-            toggleEyeIcon(loginTogglePassword);
-        });
-        
-        const registerTogglePassword = document.getElementById('register-toggle-password');
-        const registerPassword = document.getElementById('register-password');
-        
-        registerTogglePassword.addEventListener('click', () => {
-            const type = registerPassword.getAttribute('type') === 'password' ? 'text' : 'password';
-            registerPassword.setAttribute('type', type);
-            toggleEyeIcon(registerTogglePassword);
-        });
-        
-        function toggleEyeIcon(button) {
-            const svg = button.querySelector('svg');
-            if (svg.innerHTML.includes('M15 12a3 3 0 11-6 0 3 3 0 016 0z')) {
-                svg.innerHTML = `
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                `;
-            } else {
-                svg.innerHTML = `
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                `;
-            }
-        }
-        
-        // Form validation and submission
-        const loginFormElement = document.getElementById('loginForm');
-        const registerFormElement = document.getElementById('registerFormElement');
-        
-        loginFormElement.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            // Reset errors
-            hideError('login-email-error');
-            hideError('login-password-error');
-            
-            const email = document.getElementById('login-email').value;
-            const password = document.getElementById('login-password').value;
-            
-            // Validate email
-            if (!validateEmail(email)) {
-                showError('login-email-error', 'Please enter a valid email address');
-                return;
-            }
-            
-            // Check if user exists
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
-            const user = users.find(u => u.email === email && u.password === password);
-            
-            if (!user) {
-                showError('login-password-error', 'Invalid email or password');
-                return;
-            }
-            
-            // Login successful
-            localStorage.setItem('currentUser', JSON.stringify(user));
-            
-            // Redirect to dashboard
-            window.location.href = 'main.html';
-        });
-        
-        registerFormElement.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            // Reset errors
-            hideError('register-username-error');
-            hideError('register-email-error');
-            hideError('register-password-error');
-            hideError('confirm-password-error');
-            
-            const username = document.getElementById('register-username').value;
-            const email = document.getElementById('register-email').value;
-            const password = document.getElementById('register-password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
-            
-            let isValid = true;
-            
-            // Validate username
-            if (username.length < 3) {
-                showError('register-username-error', 'Username must be at least 3 characters');
-                isValid = false;
-            }
-            
-            // Validate email
-            if (!validateEmail(email)) {
-                showError('register-email-error', 'Please enter a valid email address');
-                isValid = false;
-            }
-            
-            // Validate password
-            if (password.length < 6) {
-                showError('register-password-error', 'Password must be at least 6 characters');
-                isValid = false;
-            }
-            
-            // Validate confirm password
-            if (password !== confirmPassword) {
-                showError('confirm-password-error', 'Passwords do not match');
-                isValid = false;
-            }
-            
-            if (!isValid) return;
-            
-            // Check if email already exists
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
-            if (users.some(u => u.email === email)) {
-                showError('register-email-error', 'Email already in use');
-                return;
-            }
-            
-            // Create new user
-            const newUser = {
-                id: Date.now(),
-                username,
-                email,
-                password,
-                role: 'user'
-            };
-            
-            users.push(newUser);
-            localStorage.setItem('users', JSON.stringify(users));
-            
-            // Set as current user
-            localStorage.setItem('currentUser', JSON.stringify(newUser));
-            
-            // Redirect to dashboard
-            window.location.href = 'main.html';
-        });
-        
-        function validateEmail(email) {
-            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return re.test(email);
-        }
-        
-        function showError(id, message) {
-            const errorElement = document.getElementById(id);
-            errorElement.textContent = message;
-            errorElement.classList.remove('hidden');
-        }
-        
-        function hideError(id) {
-            const errorElement = document.getElementById(id);
-            errorElement.classList.add('hidden');
-        }
-
-        // Grid Animation
-        const gridOverlay = document.getElementById('grid-overlay');
-        const wave = document.getElementById('wave');
-        
-        // Animation settings
-        const animationDuration = 15; // seconds
-        const gridPulseDuration = 8; // seconds
-        
-        // Set up grid overlay animation
-        gridOverlay.style.animation = `grid-pulse ${gridPulseDuration}s ease-in-out infinite`;
-        
-        // Function to start a new wave animation
-        function startWaveAnimation() {
-            // Randomly choose a corner to start from
-            const corners = [
-                { animation: 'wave-top-left', delay: 0 },
-                { animation: 'wave-top-right', delay: 0 },
-                { animation: 'wave-bottom-left', delay: 0 },
-                { animation: 'wave-bottom-right', delay: 0 }
-            ];
-            
-            const randomCorner = corners[Math.floor(Math.random() * corners.length)];
-            
-            // Reset wave element
-            wave.style.animation = 'none';
-            wave.offsetHeight; // Trigger reflow
-            
-            // Apply new animation
-            wave.style.animation = `${randomCorner.animation} ${animationDuration}s cubic-bezier(0.215, 0.610, 0.355, 1.000) forwards`;
-            
-            // Schedule next wave
-            setTimeout(() => {
-                startWaveAnimation();
-            }, animationDuration * 500);
-        }
-        
-        // Start the animation when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            startWaveAnimation();
-        });
-    </script>
+    <script type="module" src="src/js/login.js"></script>
 </body>
 </html>
