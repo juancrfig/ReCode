@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReCode - Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css">
     <link rel="stylesheet" href="src/css/styles.css">
 </head>
 <body class="min-h-screen bg-dark text-light">
@@ -121,6 +122,7 @@
             <div class="flex justify-between items-center mb-6">
                 <h2 id="deck-view-title" class="text-2xl font-semibold">Deck Name</h2>
                 <div class="flex space-x-4">
+                    <button id="edit-deck-btn" class="btn btn-primary">Edit Deck</button>
                     <button id="add-card-btn" class="btn btn-accent">Add Card</button>
                     <button class="btn btn-primary" data-close-modal>Close</button>
                 </div>
@@ -128,6 +130,54 @@
             <div id="deck-cards-container" class="space-y-4">
                 <!-- Cards will be inserted here -->
             </div>
+        </div>
+    </div>
+
+    <!-- Edit Deck Modal -->
+    <div id="edit-deck-modal" class="fixed inset-0 bg-black/90 flex items-center justify-center hidden" data-modal>
+        <div class="bg-dark-lighter rounded-lg p-6 w-full max-w-md" data-modal-content>
+            <h2 class="text-2xl font-semibold mb-4">Edit Deck</h2>
+            <form id="edit-deck-form">
+                <input type="hidden" id="edit-deck-id">
+                <div class="mb-4">
+                    <label for="edit-deck-name" class="block text-secondary mb-2">Name</label>
+                    <input type="text" id="edit-deck-name" class="form-input" required>
+                </div>
+                <div class="mb-6">
+                    <label for="edit-deck-description" class="block text-secondary mb-2">Description</label>
+                    <textarea id="edit-deck-description" class="form-input" rows="3"></textarea>
+                </div>
+                <div class="flex justify-end space-x-4">
+                    <button type="button" class="btn btn-primary" data-close-modal>Cancel</button>
+                    <button type="submit" class="btn btn-accent">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Card Modal -->
+    <div id="edit-card-modal" class="fixed inset-0 bg-black/90 flex items-center justify-center hidden" data-modal>
+        <div class="bg-dark-lighter rounded-lg p-6 w-full max-w-4xl" data-modal-content>
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-semibold">Edit Card</h2>
+                <button class="btn btn-primary" data-close-modal>Close</button>
+            </div>
+            <form id="edit-card-form" class="space-y-6">
+                <input type="hidden" id="edit-card-id">
+                <div>
+                    <label for="edit-card-question" class="block text-secondary mb-2">Question</label>
+                    <textarea id="edit-card-question" class="form-input h-32" required></textarea>
+                </div>
+                <div>
+                    <label for="edit-card-answer" class="block text-secondary mb-2">Answer (supports markdown code blocks)</label>
+                    <textarea id="edit-card-answer" class="form-input h-32 font-mono" required></textarea>
+                </div>
+                <div class="flex justify-end space-x-4">
+                    <button type="button" class="btn btn-danger" id="delete-card-btn">Delete Card</button>
+                    <button type="button" class="btn btn-primary" data-close-modal>Cancel</button>
+                    <button type="submit" class="btn btn-accent">Save Changes</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -181,6 +231,11 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-java.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-cpp.min.js"></script>
     <script type="module" src="src/js/app.js"></script>
 </body>
 </html>

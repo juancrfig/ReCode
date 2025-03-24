@@ -49,6 +49,40 @@ class Storage {
         return decks.find(deck => deck.id === deckId);
     }
 
+    updateDeck(deckId, { name, description }) {
+        const decks = JSON.parse(localStorage.getItem('decks') || '[]');
+        const deckIndex = decks.findIndex(d => d.id === deckId);
+        
+        if (deckIndex === -1) return null;
+
+        decks[deckIndex] = {
+            ...decks[deckIndex],
+            name,
+            description,
+            updatedAt: new Date().toISOString()
+        };
+
+        localStorage.setItem('decks', JSON.stringify(decks));
+        return decks[deckIndex];
+    }
+
+    deleteDeck(deckId) {
+        const decks = JSON.parse(localStorage.getItem('decks') || '[]');
+        const deckIndex = decks.findIndex(d => d.id === deckId);
+        
+        if (deckIndex === -1) return false;
+
+        // Delete all cards in the deck
+        const cards = this.getCards(deckId);
+        cards.forEach(card => this.deleteCard(card.id));
+
+        // Delete the deck
+        decks.splice(deckIndex, 1);
+        localStorage.setItem('decks', JSON.stringify(decks));
+
+        return true;
+    }
+
     // Card Management
     createCard(deckId, { question, answer, type = 'code', tags = [] }) {
         const user = auth.getCurrentUser();
@@ -178,6 +212,23 @@ class Storage {
         });
 
         return true;
+    }
+
+    updateCard(cardId, { question, answer }) {
+        const cards = JSON.parse(localStorage.getItem('cards') || '[]');
+        const cardIndex = cards.findIndex(c => c.id === cardId);
+        
+        if (cardIndex === -1) return null;
+
+        cards[cardIndex] = {
+            ...cards[cardIndex],
+            question,
+            answer,
+            updatedAt: new Date().toISOString()
+        };
+
+        localStorage.setItem('cards', JSON.stringify(cards));
+        return cards[cardIndex];
     }
 
     // Practice Stats

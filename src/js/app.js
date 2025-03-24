@@ -214,38 +214,98 @@ class App {
                     return;
                 }
 
-                const newCard = {
-                    id: Date.now().toString(),
-                    deckId,
+                // Create card using storage method
+                const newCard = storage.createCard(deckId, {
                     question,
                     answer,
-                    stats: {
-                        lastReview: null,
-                        dueDate: new Date().toISOString(),
-                        interval: 0,
-                        ease: 2.5,
-                        reviews: 0
-                    }
-                };
+                    type: 'code'
+                });
 
-                // Add card to storage
-                const cards = JSON.parse(localStorage.getItem('cards') || '[]');
-                cards.push(newCard);
-                localStorage.setItem('cards', JSON.stringify(cards));
-
-                // Update user stats
-                const user = auth.getCurrentUser();
-                if (user && user.stats) {
-                    auth.updateUserStats({
-                        totalCards: (user.stats.totalCards || 0) + 1,
-                        learning: (user.stats.learning || 0) + 1
-                    });
+                if (!newCard) {
+                    alert('Failed to create card');
+                    return;
                 }
 
-                // Close add card modal and refresh deck view
+                // Close add card modal and refresh views
                 this.closeModal('add-card-modal');
-                this.openDeck(deckId);
-                this.loadDashboard();
+                
+                // Update all relevant views
+                this.openDeck(deckId); // Refresh deck view
+                this.loadDashboard(); // Update dashboard stats
+                
+                // Update practice button if the card is due
+                const dueCards = storage.getDueCards();
+                const dueCardsEl = document.getElementById('due-cards');
+                if (dueCardsEl) {
+                    dueCardsEl.textContent = dueCards.length;
+                }
+            });
+        }
+
+        // Edit deck button
+        document.addEventListener('click', (e) => {
+            if (e.target.id === 'edit-deck-btn') {
+                const deckId = document.getElementById('add-card-deck-id').value;
+                this.openEditDeckModal(deckId);
+            }
+        });
+
+        // Edit deck form
+        const editDeckForm = document.getElementById('edit-deck-form');
+        if (editDeckForm) {
+            editDeckForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const deckId = document.getElementById('edit-deck-id').value;
+                const name = document.getElementById('edit-deck-name').value;
+                const description = document.getElementById('edit-deck-description').value;
+
+                const updatedDeck = storage.updateDeck(deckId, { name, description });
+                if (updatedDeck) {
+                    this.closeModal('edit-deck-modal');
+                    this.openDeck(deckId);
+                    this.loadDashboard();
+                }
+            });
+        }
+
+        // Edit card handlers
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('[data-edit-card]')) {
+                const cardId = e.target.closest('[data-edit-card]').dataset.editCard;
+                this.openEditCardModal(cardId);
+            }
+        });
+
+        // Edit card form
+        const editCardForm = document.getElementById('edit-card-form');
+        if (editCardForm) {
+            editCardForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const cardId = document.getElementById('edit-card-id').value;
+                const question = document.getElementById('edit-card-question').value;
+                const answer = document.getElementById('edit-card-answer').value;
+
+                const updatedCard = storage.updateCard(cardId, { question, answer });
+                if (updatedCard) {
+                    this.closeModal('edit-card-modal');
+                    this.openDeck(updatedCard.deckId);
+                }
+            });
+        }
+
+        // Delete card button
+        const deleteCardBtn = document.getElementById('delete-card-btn');
+        if (deleteCardBtn) {
+            deleteCardBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to delete this card?')) {
+                    const cardId = document.getElementById('edit-card-id').value;
+                    const card = storage.getCards().find(c => c.id === cardId);
+                    if (card && storage.deleteCard(cardId)) {
+                        this.closeModal('edit-card-modal');
+                        this.openDeck(card.deckId);
+                        this.loadDashboard();
+                    }
+                }
             });
         }
     }
@@ -331,13 +391,16 @@ class App {
             const cardEl = document.createElement('div');
             cardEl.className = 'bg-dark/50 rounded-lg p-4 border border-secondary/20 mb-4';
             cardEl.innerHTML = `
-                <pre class="text-light font-mono mb-4 overflow-x-auto">${card.question}</pre>
+                <div class="mb-4">${this.formatCodeBlock(card.question)}</div>
                 <div class="flex justify-between items-center">
                     <div class="text-sm text-secondary">
                         Last review: ${card.stats.lastReview ? new Date(card.stats.lastReview).toLocaleDateString() : 'Never'}
                     </div>
-                    <div class="text-sm text-accent">
-                        Due: ${new Date(card.stats.dueDate).toLocaleDateString()}
+                    <div class="flex items-center space-x-4">
+                        <button class="btn btn-primary btn-sm" data-edit-card="${card.id}">Edit</button>
+                        <div class="text-sm text-accent">
+                            Due: ${new Date(card.stats.dueDate).toLocaleDateString()}
+                        </div>
                     </div>
                 </div>
             `;
@@ -400,17 +463,12 @@ class App {
         const deck = storage.getDeck(deckId);
         if (!deck) return;
 
-        // Show deck view modal
         const modal = document.getElementById('deck-view-modal');
         modal.classList.remove('hidden');
 
-        // Update modal content
         document.getElementById('deck-view-title').textContent = deck.name;
-        
-        // Store current deck ID for adding cards
         document.getElementById('add-card-deck-id').value = deck.id;
-        
-        // Load cards
+
         const cards = storage.getCards(deckId);
         const cardsContainer = document.getElementById('deck-cards-container');
         cardsContainer.innerHTML = '';
@@ -419,26 +477,22 @@ class App {
             const cardEl = document.createElement('div');
             cardEl.className = 'bg-dark/50 rounded-lg p-4 border border-secondary/20 mb-4';
             cardEl.innerHTML = `
-                <pre class="text-light font-mono mb-4 overflow-x-auto">${card.question}</pre>
+                <div class="mb-4">${this.formatCodeBlock(card.question)}</div>
+                <div class="mb-4">${this.formatCodeBlock(card.answer)}</div>
                 <div class="flex justify-between items-center">
                     <div class="text-sm text-secondary">
                         Last review: ${card.stats.lastReview ? new Date(card.stats.lastReview).toLocaleDateString() : 'Never'}
                     </div>
-                    <div class="text-sm text-accent">
-                        Due: ${new Date(card.stats.dueDate).toLocaleDateString()}
+                    <div class="flex items-center space-x-4">
+                        <button class="btn btn-primary btn-sm" data-edit-card="${card.id}">Edit</button>
+                        <div class="text-sm text-accent">
+                            Due: ${new Date(card.stats.dueDate).toLocaleDateString()}
+                        </div>
                     </div>
                 </div>
             `;
             cardsContainer.appendChild(cardEl);
         });
-
-        // Setup add card button
-        const addCardBtn = document.getElementById('add-card-btn');
-        if (addCardBtn) {
-            addCardBtn.onclick = () => {
-                this.openModal('add-card-modal');
-            };
-        }
     }
 
     startPractice(cards) {
@@ -459,8 +513,8 @@ class App {
             }
 
             const card = shuffledCards[currentCardIndex];
-            questionContainer.innerHTML = `<pre class="text-light font-mono">${card.question}</pre>`;
-            answerContainer.innerHTML = `<pre class="text-light font-mono">${card.answer}</pre>`;
+            questionContainer.innerHTML = this.formatCodeBlock(card.question);
+            answerContainer.innerHTML = this.formatCodeBlock(card.answer);
             answerContainer.classList.add('hidden');
             showAnswerBtn.classList.remove('hidden');
             answerButtons.classList.add('hidden');
@@ -499,6 +553,43 @@ class App {
             [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
         }
         return shuffled;
+    }
+
+    openEditDeckModal(deckId) {
+        const deck = storage.getDeck(deckId);
+        if (!deck) return;
+
+        document.getElementById('edit-deck-id').value = deck.id;
+        document.getElementById('edit-deck-name').value = deck.name;
+        document.getElementById('edit-deck-description').value = deck.description || '';
+
+        this.openModal('edit-deck-modal');
+    }
+
+    openEditCardModal(cardId) {
+        const cards = storage.getCards();
+        const card = cards.find(c => c.id === cardId);
+        if (!card) return;
+
+        document.getElementById('edit-card-id').value = card.id;
+        document.getElementById('edit-card-question').value = card.question;
+        document.getElementById('edit-card-answer').value = card.answer;
+
+        this.openModal('edit-card-modal');
+    }
+
+    // Update the card display methods to handle code blocks
+    formatCodeBlock(text) {
+        const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+        return text.replace(codeBlockRegex, (match, language, code) => {
+            const lang = language || 'plaintext';
+            const highlightedCode = Prism.highlight(
+                code.trim(),
+                Prism.languages[lang] || Prism.languages.plaintext,
+                lang
+            );
+            return `<pre class="language-${lang}"><code class="language-${lang}">${highlightedCode}</code></pre>`;
+        });
     }
 }
 
