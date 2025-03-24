@@ -9,7 +9,16 @@ class App {
     }
 
     initialize() {
+        // Ensure we're authenticated and have user data
         if (!auth.isAuthenticated()) {
+            window.location.href = 'index.html';
+            return;
+        }
+
+        const user = auth.getCurrentUser();
+        if (!user) {
+            console.error('User data not loaded');
+            auth.logout();
             window.location.href = 'index.html';
             return;
         }
@@ -22,8 +31,8 @@ class App {
     initializeUI() {
         const user = auth.getCurrentUser();
         const userGreeting = document.getElementById('user-greeting');
-        if (userGreeting) {
-            userGreeting.textContent = `Welcome back, ${user.name}!`;
+        if (userGreeting && user) {
+            userGreeting.textContent = `Welcome back, ${user.name || 'User'}!`;
         }
 
         this.updateStats();
@@ -190,6 +199,55 @@ class App {
                 this.handleAnswer(quality);
             });
         });
+
+        // Add card form submission
+        const addCardForm = document.getElementById('add-card-form');
+        if (addCardForm) {
+            addCardForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const deckId = document.getElementById('add-card-deck-id').value;
+                const question = document.getElementById('card-question').value;
+                const answer = document.getElementById('card-answer').value;
+
+                if (!deckId || !question || !answer) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+
+                const newCard = {
+                    id: Date.now().toString(),
+                    deckId,
+                    question,
+                    answer,
+                    stats: {
+                        lastReview: null,
+                        dueDate: new Date().toISOString(),
+                        interval: 0,
+                        ease: 2.5,
+                        reviews: 0
+                    }
+                };
+
+                // Add card to storage
+                const cards = JSON.parse(localStorage.getItem('cards') || '[]');
+                cards.push(newCard);
+                localStorage.setItem('cards', JSON.stringify(cards));
+
+                // Update user stats
+                const user = auth.getCurrentUser();
+                if (user && user.stats) {
+                    auth.updateUserStats({
+                        totalCards: (user.stats.totalCards || 0) + 1,
+                        learning: (user.stats.learning || 0) + 1
+                    });
+                }
+
+                // Close add card modal and refresh deck view
+                this.closeModal('add-card-modal');
+                this.openDeck(deckId);
+                this.loadDashboard();
+            });
+        }
     }
 
     openModal(modalId) {
@@ -319,10 +377,10 @@ class App {
             localStorage.setItem('decks', JSON.stringify(config.decks));
             localStorage.setItem('cards', JSON.stringify(config.cards));
             
-            // Update user stats but keep current user data
-            const currentUser = auth.getCurrentUser();
-            const newUser = { ...currentUser, ...config.user };
-            auth.updateUserStats(newUser);
+            // Update user configuration
+            if (!auth.updateUserConfig(config.user)) {
+                throw new Error('Failed to update user configuration');
+            }
 
             // Refresh UI
             this.loadDashboard();
@@ -349,6 +407,9 @@ class App {
         // Update modal content
         document.getElementById('deck-view-title').textContent = deck.name;
         
+        // Store current deck ID for adding cards
+        document.getElementById('add-card-deck-id').value = deck.id;
+        
         // Load cards
         const cards = storage.getCards(deckId);
         const cardsContainer = document.getElementById('deck-cards-container');
@@ -370,6 +431,14 @@ class App {
             `;
             cardsContainer.appendChild(cardEl);
         });
+
+        // Setup add card button
+        const addCardBtn = document.getElementById('add-card-btn');
+        if (addCardBtn) {
+            addCardBtn.onclick = () => {
+                this.openModal('add-card-modal');
+            };
+        }
     }
 
     startPractice(cards) {

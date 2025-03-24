@@ -7,22 +7,46 @@ export class Auth {
 
     loadUser() {
         const userData = localStorage.getItem('user');
+        const savedCredentials = localStorage.getItem('rememberedCredentials');
+        
         if (userData) {
             this.currentUser = JSON.parse(userData);
             return true;
+        } else if (savedCredentials) {
+            const { email, password } = JSON.parse(savedCredentials);
+            return this.login(email, password);
         }
         return false;
     }
 
-    login(email, password) {
+    login(email, password, remember = false) {
         // Get users from storage
         const users = JSON.parse(localStorage.getItem('users') || '[]');
         const user = users.find(u => u.email === email && u.password === password);
         
         if (user) {
-            delete user.password; // Don't store password in session
-            this.currentUser = user;
-            localStorage.setItem('user', JSON.stringify(user));
+            // Create a clean copy of user data without password
+            const userWithoutPassword = {
+                id: user.id,
+                name: user.name || email.split('@')[0], // Fallback name if not set
+                email: user.email,
+                createdAt: user.createdAt || new Date().toISOString(),
+                stats: user.stats || {
+                    totalCards: 0,
+                    mastered: 0,
+                    learning: 0,
+                    streak: 0,
+                    lastPractice: null
+                }
+            };
+            
+            this.currentUser = userWithoutPassword;
+            localStorage.setItem('user', JSON.stringify(userWithoutPassword));
+            
+            // Save credentials if remember me is checked
+            if (remember) {
+                localStorage.setItem('rememberedCredentials', JSON.stringify({ email, password }));
+            }
             return true;
         }
         
@@ -41,7 +65,7 @@ export class Auth {
         // Create new user
         const newUser = {
             id: Date.now().toString(),
-            name,
+            name: name || email.split('@')[0], // Fallback name if not provided
             email,
             password,
             createdAt: new Date().toISOString(),
@@ -58,7 +82,7 @@ export class Auth {
         users.push(newUser);
         localStorage.setItem('users', JSON.stringify(users));
 
-        // Log user in
+        // Log user in (without password)
         const userWithoutPassword = { ...newUser };
         delete userWithoutPassword.password;
         this.currentUser = userWithoutPassword;
@@ -70,6 +94,7 @@ export class Auth {
     logout() {
         this.currentUser = null;
         localStorage.removeItem('user');
+        localStorage.removeItem('rememberedCredentials');
     }
 
     isAuthenticated() {
@@ -100,6 +125,33 @@ export class Auth {
         // Update current user
         this.currentUser.stats = users[userIndex].stats;
         localStorage.setItem('user', JSON.stringify(this.currentUser));
+
+        return true;
+    }
+
+    updateUserConfig(config) {
+        if (!this.currentUser) return false;
+
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        const userIndex = users.findIndex(u => u.id === this.currentUser.id);
+
+        if (userIndex === -1) return false;
+
+        // Update user configuration
+        users[userIndex] = {
+            ...users[userIndex],
+            ...config,
+            id: this.currentUser.id, // Preserve the user ID
+            password: users[userIndex].password // Preserve the password
+        };
+
+        // Save updated users
+        localStorage.setItem('users', JSON.stringify(users));
+
+        // Update current user (excluding password)
+        const { password, ...userWithoutPassword } = users[userIndex];
+        this.currentUser = userWithoutPassword;
+        localStorage.setItem('user', JSON.stringify(userWithoutPassword));
 
         return true;
     }

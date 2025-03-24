@@ -120,7 +120,10 @@
         <div class="bg-dark-lighter rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto" data-modal-content>
             <div class="flex justify-between items-center mb-6">
                 <h2 id="deck-view-title" class="text-2xl font-semibold">Deck Name</h2>
-                <button class="btn btn-primary" data-close-modal>Close</button>
+                <div class="flex space-x-4">
+                    <button id="add-card-btn" class="btn btn-accent">Add Card</button>
+                    <button class="btn btn-primary" data-close-modal>Close</button>
+                </div>
             </div>
             <div id="deck-cards-container" class="space-y-4">
                 <!-- Cards will be inserted here -->
@@ -150,6 +153,31 @@
                     <button class="btn btn-primary" data-answer-quality="5">Easy</button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Add Card Modal -->
+    <div id="add-card-modal" class="fixed inset-0 bg-black/90 flex items-center justify-center hidden" data-modal>
+        <div class="bg-dark-lighter rounded-lg p-6 w-full max-w-4xl" data-modal-content>
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-semibold">Add New Card</h2>
+                <button class="btn btn-primary" data-close-modal>Close</button>
+            </div>
+            <form id="add-card-form" class="space-y-6">
+                <input type="hidden" id="add-card-deck-id">
+                <div>
+                    <label for="card-question" class="block text-secondary mb-2">Question</label>
+                    <textarea id="card-question" class="form-input h-32" required></textarea>
+                </div>
+                <div>
+                    <label for="card-answer" class="block text-secondary mb-2">Answer</label>
+                    <textarea id="card-answer" class="form-input h-32" required></textarea>
+                </div>
+                <div class="flex justify-end space-x-4">
+                    <button type="button" class="btn btn-primary" data-close-modal>Cancel</button>
+                    <button type="submit" class="btn btn-accent">Add Card</button>
+                </div>
+            </form>
         </div>
     </div>
 

@@ -28,8 +28,9 @@ class Login {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
             
-            if (auth.login(email, password)) {
+            if (auth.login(email, password, rememberMe)) {
                 window.location.href = 'main.html';
             } else {
                 alert('Invalid email or password');

@@ -1,0 +1,14 @@
+@layer utilities {
+    .bg-grid {
+        background-image: 
+            linear-gradient(rgba(28, 78, 128, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(28, 78, 128, 0.1) 1px, transparent 1px);
+        background-size: 20px 20px;
+    }
+    .text-shadow {
+        text-shadow: 0 0 10px rgba(28, 78, 128, 0.5);
+    }
+    .active-tab {
+        border-bottom: 2px solid #ea6947;
+    }
+} 

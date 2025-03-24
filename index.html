@@ -5,34 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ReCode - Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="src/js/tailwind.config.js"></script>
     <link rel="stylesheet" href="src/css/styles.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            DEFAULT: '#1c4e80',
-                            dark: '#163e66'
-                        },
-                        secondary: '#7c909a',
-                        accent: {
-                            DEFAULT: '#ea6947',
-                            dark: '#d55a3a'
-                        },
-                        dark: {
-                            DEFAULT: '#23282e',
-                            lighter: '#2d343c'
-                        },
-                        light: '#d0dae5'
-                    },
-                    boxShadow: {
-                        'neon': '0 0 5px theme("colors.accent.DEFAULT"), 0 0 20px theme("colors.accent.DEFAULT")',
-                    }
-                }
-            }
-        }
-    </script>
+    <link rel="stylesheet" href="src/css/grid-animation.css">
+    <link rel="stylesheet" href="src/css/tailwind.utilities.css">
     <style type="text/tailwindcss">
         @layer utilities {
             .bg-grid {
@@ -193,6 +169,7 @@
                         id="login-email" 
                         class="form-input"
                         placeholder="your@email.com"
+                        autocomplete="email"
                         required
                     >
                 </div>
@@ -203,8 +180,17 @@
                         id="login-password" 
                         class="form-input"
                         placeholder="••••••••"
+                        autocomplete="current-password"
                         required
                     >
+                </div>
+                <div class="flex items-center space-x-2">
+                    <input 
+                        type="checkbox" 
+                        id="remember-me" 
+                        class="w-4 h-4 rounded border-secondary/20 bg-dark-lighter text-accent focus:ring-accent"
+                    >
+                    <label for="remember-me" class="text-secondary text-sm">Remember me</label>
                 </div>
                 <button type="submit" class="btn btn-accent w-full">
                     Login
@@ -220,6 +206,7 @@
                         id="signup-name" 
                         class="form-input"
                         placeholder="John Doe"
+                        autocomplete="name"
                         required
                     >
                 </div>
@@ -230,6 +217,7 @@
                         id="signup-email" 
                         class="form-input"
                         placeholder="your@email.com"
+                        autocomplete="email"
                         required
                     >
                 </div>
@@ -240,6 +228,7 @@
                         id="signup-password" 
                         class="form-input"
                         placeholder="••••••••"
+                        autocomplete="new-password"
                         required
                     >
                 </div>
